@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile | Traveloop</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="main.css">
+    <style>
+        /* CSS Variables for Light/Dark Mode Switching */
+        :root {
+            --primary-blue: #2563eb;
+            --bg-page: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --input-bg: #f8fafc;
+        }
+
+        /* --- DARK MODE OVERRIDES --- */
+        body.dark-mode {
+            --bg-page: #0f172a;
+            --card-bg: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
+            --input-bg: #0f172a;
+        }
+
+        body { background-color: var(--bg-page) !important; color: var(--text-main); font-family: 'Poppins', sans-serif; transition: background-color 0.3s ease; }
+
+        .profile-hero { height: 320px; background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%); position: relative; overflow: hidden; }
+        .profile-hero::after { content: ''; position: absolute; inset: 0; background: url('https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&q=80&w=1920') center/cover; opacity: 0.25; }
+
+        .profile-container { max-width: 1200px; margin: -120px auto 5rem; padding: 0 2rem; position: relative; z-index: 10; display: grid; grid-template-columns: 350px 1fr; gap: 2rem; }
+
+        /* Dynamic Glass Cards */
+        .glass-card { background-color: var(--card-bg) !important; border-radius: 24px; padding: 2rem; box-shadow: 0 10px 40px -10px rgba(0,0,0,0.1) !important; border: 1px solid var(--border-color); margin-bottom: 2rem; transition: background-color 0.3s ease, border-color 0.3s ease; position: relative;}
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+        .card-header h3 { margin: 0; font-size: 1.3rem; color: var(--text-main); display: flex; align-items: center; gap: 10px;}
+
+        /* Quick Settings Icon on Card */
+        .card-settings-link { position: absolute; top: 20px; right: 25px; color: var(--text-muted); font-size: 1.2rem; transition: 0.3s; cursor: pointer; z-index: 5;}
+        .card-settings-link:hover { color: var(--primary-blue); transform: rotate(45deg); }
+
+        /* User Info Sidebar */
+        .user-info-card { text-align: center; position: relative; padding-top: 5rem; }
+        .avatar-container { position: absolute; top: -70px; left: 50%; transform: translateX(-50%); width: 140px; height: 140px; border-radius: 50%; border: 6px solid var(--card-bg); box-shadow: 0 10px 25px rgba(0,0,0,0.15); overflow: hidden; background: var(--card-bg); transition: border-color 0.3s ease;}
+        .avatar-container img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .user-name { font-size: 1.8rem; font-weight: 800; margin: 0 0 0.2rem 0; color: var(--text-main); letter-spacing: -0.5px;}
+        .user-email { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1rem; }
+        .user-id-badge { background: rgba(37, 99, 235, 0.1); color: var(--primary-blue); font-weight: 700; font-size: 0.8rem; padding: 0.4rem 1rem; border-radius: 50px; display: inline-flex; align-items: center; gap: 6px; margin-bottom: 1.5rem; border: 1px solid rgba(37, 99, 235, 0.2); }
+        .user-bio { font-size: 0.95rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 2rem; padding: 0 1rem; }
+        
+        .pref-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; text-align: left; }
+        .pref-item { background: var(--input-bg); padding: 1rem; border-radius: 16px; border: 1px solid var(--border-color); }
+        .pref-item i { color: var(--primary-blue); font-size: 1.2rem; margin-bottom: 0.5rem; }
+        .pref-item strong { display: block; color: var(--text-main); font-size: 0.85rem; margin-bottom: 0.2rem;}
+        .pref-item span { color: var(--text-muted); font-size: 0.8rem; }
+
+        .btn-edit-profile { width: 100%; padding: 1rem; border-radius: 16px; border: none; background: var(--primary-blue); color: white; font-weight: 600; cursor: pointer; transition: 0.3s; margin-top: 1.5rem; font-size: 1rem; }
+        .btn-edit-profile:hover { background: #1d4ed8; box-shadow: 0 10px 20px rgba(37,99,235,0.2); transform: translateY(-2px); }
+
+        /* New Sidebar Settings Button */
+        .btn-sidebar-settings { width: 100%; padding: 1rem; border-radius: 16px; border: 1px solid var(--border-color); background: var(--input-bg); color: var(--text-main); font-weight: 600; cursor: pointer; transition: 0.3s; margin-top: 0.8rem; font-size: 1rem; display: flex; align-items: center; justify-content: center; gap: 10px;}
+        .btn-sidebar-settings:hover { border-color: var(--primary-blue); color: var(--primary-blue); background: rgba(37, 99, 235, 0.05); }
+
+        /* Stats Grid */
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+        .stat-box { border-radius: 20px; padding: 1.5rem; text-align: center; transition: 0.3s; border: 1px solid transparent; }
+        .stat-box:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+        .stat-trips { background: rgba(37, 99, 235, 0.1); color: #3b82f6; border-color: rgba(37, 99, 235, 0.2); }
+        .stat-cities { background: rgba(21, 128, 61, 0.1); color: #10b981; border-color: rgba(21, 128, 61, 0.2); }
+        .stat-acts { background: rgba(185, 28, 28, 0.1); color: #ef4444; border-color: rgba(185, 28, 28, 0.2); }
+        .stat-budget { background: rgba(126, 34, 206, 0.1); color: #a855f7; border-color: rgba(126, 34, 206, 0.2); }
+        .stat-box h2 { font-size: 2.2rem; margin: 0 0 0.2rem 0; font-weight: 800; letter-spacing: -1px; }
+        .stat-box p { margin: 0; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.8; }
+
+        /* Achievements */
+        .badges-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1.2rem; }
+        .badge-card { background: var(--input-bg); border-radius: 20px; padding: 1.5rem 1rem; text-align: center; border: 1px solid var(--border-color); transition: 0.3s; display: flex; flex-direction: column; align-items: center; justify-content: center;}
+        .badge-card.unlocked { background: linear-gradient(135deg, var(--card-bg) 0%, rgba(245, 158, 11, 0.1) 100%); border-color: rgba(245, 158, 11, 0.3); box-shadow: 0 10px 20px rgba(245, 158, 11, 0.1); }
+        .badge-card.locked { opacity: 0.5; filter: grayscale(100%); }
+        .badge-icon { width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; margin-bottom: 1rem; color: white; }
+        .badge-card.unlocked .badge-icon { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); box-shadow: 0 5px 15px rgba(245, 158, 11, 0.4); }
+        .badge-card.locked .badge-icon { background: #cbd5e1; }
+        .badge-card h4 { margin: 0 0 0.3rem 0; font-size: 1rem; color: var(--text-main); font-weight: 700;}
+        .badge-card p { margin: 0; font-size: 0.8rem; color: var(--text-muted); line-height: 1.4;}
+
+        .navbar:not(.scrolled) .nav-links a:not(.nav-btn), .navbar:not(.scrolled) .logo, .navbar:not(.scrolled) .hamburger { color: white !important; }
+        .footer { background: var(--card-bg); padding: 2rem; border-top: 1px solid var(--border-color); text-align: center; }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo"><i class="fa-solid fa-location-dot"></i> Traveloop</a>
+            <div class="nav-links" id="nav-links"></div>
+            <div class="hamburger" id="hamburger"><i class="fa-solid fa-bars"></i></div>
+        </div>
+    </nav>
+
+    <header class="profile-hero"></header>
+
+    <main class="profile-container">
+        <div>
+            <div class="glass-card user-info-card">
+                <a href="settings.html" class="card-settings-link" title="Settings">
+                    <i class="fa-solid fa-gear"></i>
+                </a>
+
+                <div class="avatar-container">
+                    <img src="https://ui-avatars.com/api/?name=Shrey+Patel&background=3b82f6&color=fff&size=150" id="userAvatar" alt="Profile">
+                </div>
+                <h2 class="user-name" id="dispName">Shrey Patel</h2>
+                <p class="user-email" id="dispEmail">shrey@gmail.com</p>
+                
+                <div class="user-id-badge">
+                    <i class="fa-solid fa-id-card-clip"></i> Traveler ID: 25CE090
+                </div>
+                
+                <p class="user-bio" id="dispBio">Tech enthusiast and adventure seeker. Currently exploring the world one hackathon and vacation at a time! 🌍✈️</p>
+                
+                <div class="pref-grid">
+                    <div class="pref-item">
+                        <i class="fa-regular fa-compass"></i>
+                        <strong>Travel Style</strong>
+                        <span id="dispStyle">Adventure</span>
+                    </div>
+                    <div class="pref-item">
+                        <i class="fa-regular fa-calendar-check"></i>
+                        <strong>Joined</strong>
+                        <span>03-02-2026</span>
+                    </div>
+                </div>
+
+                <button class="btn-edit-profile" onclick="openModal('editProfileModal')">
+                    <i class="fa-solid fa-user-pen"></i> Edit Profile
+                </button>
+                
+                <button class="btn-sidebar-settings" onclick="window.location.href='settings.html'">
+                    <i class="fa-solid fa-gear"></i> Settings
+                </button>
+            </div>
+
+            <div class="glass-card">
+                <div class="card-header">
+                    <h3><i class="fa-solid fa-shield-halved" style="color:var(--primary-blue)"></i> Quick Access</h3>
+                </div>
+                <div class="settings-list" style="display: flex; flex-direction: column; gap: 0.8rem;">
+                    <button style="display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.5rem; background: var(--input-bg); border-radius: 16px; border: 1px solid var(--border-color); font-family: inherit; font-size: 0.95rem; font-weight: 600; color: var(--text-main); cursor: pointer; transition: 0.2s;" onclick="toggleDarkMode()">
+                        <span><i class="fa-regular fa-moon" style="width:25px;"></i> Dark Mode</span> 
+                        <i id="darkModeIcon" class="fa-solid fa-toggle-off" style="color:var(--text-muted); font-size:1.5rem; transition: 0.3s;"></i>
+                    </button>
+                    <button style="display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.5rem; background: rgba(239, 68, 68, 0.05); border-radius: 16px; border: 1px solid rgba(239, 68, 68, 0.1); font-family: inherit; font-size: 0.95rem; font-weight: 600; color: #ef4444; cursor: pointer; transition: 0.2s;" onclick="logout()">
+                        <span><i class="fa-solid fa-arrow-right-from-bracket" style="width:25px;"></i> Logout</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <div class="glass-card">
+                <div class="card-header" style="margin-bottom: 2rem;">
+                    <h3><i class="fa-solid fa-chart-column" style="color:var(--primary-blue)"></i> Travel Statistics</h3>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-box stat-trips">
+                        <i class="fa-solid fa-map-location-dot"></i>
+                        <h2 class="counter" id="statTrips" data-target="0">0</h2>
+                        <p>Trips</p>
+                    </div>
+                    <div class="stat-box stat-cities">
+                        <i class="fa-solid fa-earth-americas"></i>
+                        <h2 class="counter" id="statDest" data-target="0">0</h2>
+                        <p>Cities</p>
+                    </div>
+                    <div class="stat-box stat-acts">
+                        <i class="fa-solid fa-person-hiking"></i>
+                        <h2 class="counter" id="statActs" data-target="0">0</h2>
+                        <p>Activities</p>
+                    </div>
+                    <div class="stat-box stat-budget">
+                        <i class="fa-solid fa-wallet"></i>
+                        <h2 class="counter" id="statBudget" data-target="0">0</h2>
+                        <p>Budget (₹)</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-card">
+                <div class="card-header" style="margin-bottom: 2rem;">
+                    <h3><i class="fa-solid fa-medal" style="color:#f59e0b"></i> Achievements</h3>
+                    <span style="font-size:0.85rem; color:var(--text-muted); font-weight:600;" id="badgeCount">0 Unlocked</span>
+                </div>
+                <div class="badges-grid">
+                    <div class="badge-card unlocked" id="badgeStarter">
+                        <div class="badge-icon"><i class="fa-solid fa-plane-departure"></i></div>
+                        <h4>First Flight</h4>
+                        <p>Created your first trip</p>
+                    </div>
+                    <div class="badge-card locked" id="badgePlanner">
+                        <div class="badge-icon"><i class="fa-solid fa-calendar-days"></i></div>
+                        <h4>Master Planner</h4>
+                        <p>Added 10+ activities</p>
+                    </div>
+                    <div class="badge-card locked" id="badgeBudget">
+                        <div class="badge-icon"><i class="fa-solid fa-piggy-bank"></i></div>
+                        <h4>Budget Pro</h4>
+                        <p>Tracked trip expenses</p>
+                    </div>
+                    <div class="badge-card locked" id="badgeGlobe">
+                        <div class="badge-icon"><i class="fa-solid fa-globe"></i></div>
+                        <h4>Globetrotter</h4>
+                        <p>Planned 3+ unique cities</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p style="color: var(--text-muted);">&copy; 2026 Traveloop. All rights reserved.</p>
+    </footer>
+
+    <div class="modal-overlay" id="editProfileModal">
+        <div class="modal-content">
+            <h2>Edit Profile</h2>
+            <div style="margin-bottom: 1rem;">
+                <label style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted);">Display Name</label>
+                <input type="text" id="inputName" class="modal-input" placeholder="e.g. Shrey Patel">
+            </div>
+            <div style="margin-bottom: 1rem;">
+                <label style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted);">Travel Style</label>
+                <input type="text" id="inputStyle" class="modal-input" placeholder="e.g. Adventure, Luxury, Budget...">
+            </div>
+            <div style="margin-bottom: 1rem;">
+                <label style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted);">Bio</label>
+                <textarea id="inputBio" class="modal-input" style="height: 100px; resize: none;" placeholder="Tell us about your travels..."></textarea>
+            </div>
+            <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                <button style="flex: 1; background: var(--input-bg); color: var(--text-main); border: 1px solid var(--border-color); padding: 0.9rem; border-radius: 12px; cursor: pointer; font-weight: 600;" onclick="closeModal('editProfileModal')">Cancel</button>
+                <button style="flex: 2; background: var(--primary-blue); color: white; border: none; padding: 0.9rem; border-radius: 12px; cursor: pointer; font-weight: 600;" onclick="saveProfile()">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = {
+            name: "Shrey Patel",
+            email: "shrey@gmail.com",
+            style: "Adventure & Tech",
+            bio: "Tech enthusiast and adventure seeker. Currently exploring the world one hackathon and vacation at a time! 🌍✈️"
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if(localStorage.getItem("loggedIn") !== "true") window.location.href = "login.html";
+            
+            document.getElementById('nav-links').innerHTML = `
+                <a href="dashboard.html">Dashboard</a><a href="my_trips.html">My Trips</a>
+                <a href="explore_trips.html">Explore</a><a href="budget.html">Budget</a>
+                <a href="profile.html" class="active">Profile</a>
+                <a href="#" onclick="logout()" class="nav-btn" style="background: rgba(239, 68, 68, 0.1); color: #ef4444; border-radius: 8px; margin-left:10px; padding: 0.5rem 1.2rem; font-weight: 600;">Logout</a>
+            `;
+
+            if(localStorage.getItem('theme') === 'dark') {
+                document.body.classList.add('dark-mode');
+                document.getElementById('darkModeIcon').classList.replace('fa-toggle-off', 'fa-toggle-on');
+                document.getElementById('darkModeIcon').style.color = 'var(--primary-blue)';
+            }
+
+            loadUserData();
+            loadTravelStats();
+
+            window.addEventListener('scroll', () => {
+                const nav = document.getElementById('navbar');
+                if (window.scrollY > 50) nav.classList.add('scrolled');
+                else nav.classList.remove('scrolled');
+            });
+        });
+
+        function loadUserData() {
+            const savedUser = JSON.parse(localStorage.getItem("userProfileData"));
+            if(savedUser) currentUser = { ...currentUser, ...savedUser };
+            document.getElementById('dispName').innerText = currentUser.name;
+            document.getElementById('dispStyle').innerText = currentUser.style;
+            document.getElementById('dispBio').innerText = currentUser.bio;
+            const firstName = currentUser.name.split(' ')[0];
+            document.getElementById('userAvatar').src = `https://ui-avatars.com/api/?name=${firstName}&background=3b82f6&color=fff&size=150`;
+        }
+
+        function saveProfile() {
+            const newName = document.getElementById('inputName').value;
+            const newStyle = document.getElementById('inputStyle').value;
+            const newBio = document.getElementById('inputBio').value;
+            if(newName) currentUser.name = newName;
+            if(newStyle) currentUser.style = newStyle;
+            if(newBio) currentUser.bio = newBio;
+            localStorage.setItem("userProfileData", JSON.stringify(currentUser));
+            loadUserData();
+            closeModal('editProfileModal');
+        }
+
+        function toggleDarkMode() {
+            const body = document.body;
+            const icon = document.getElementById('darkModeIcon');
+            body.classList.toggle('dark-mode');
+            if(body.classList.contains('dark-mode')) {
+                localStorage.setItem('theme', 'dark');
+                icon.classList.replace('fa-toggle-off', 'fa-toggle-on');
+                icon.style.color = 'var(--primary-blue)';
+            } else {
+                localStorage.setItem('theme', 'light');
+                icon.classList.replace('fa-toggle-on', 'fa-toggle-off');
+                icon.style.color = 'var(--text-muted)';
+            }
+        }
+
+        function openModal(id) {
+            if(id === 'editProfileModal') {
+                document.getElementById('inputName').value = currentUser.name;
+                document.getElementById('inputStyle').value = currentUser.style;
+                document.getElementById('inputBio').value = currentUser.bio;
+            }
+            const modal = document.getElementById(id);
+            modal.style.display = 'flex';
+            setTimeout(() => { 
+                modal.style.opacity = '1';
+                modal.querySelector('.modal-content').style.transform = 'translateY(0)';
+            }, 10);
+        }
+
+        function closeModal(id) {
+            const modal = document.getElementById(id);
+            modal.style.opacity = '0';
+            modal.querySelector('.modal-content').style.transform = 'translateY(20px)';
+            setTimeout(() => modal.style.display = 'none', 300);
+        }
+
+        function loadTravelStats() {
+            let trips = JSON.parse(localStorage.getItem("trips")) || [];
+            let totalTrips = trips.length;
+            let uniqueCities = [...new Set(trips.map(t => t.destination.split(',')[0]))].filter(Boolean).length;
+            let totalActs = 0; let totalBudget = 0; let hasExpenses = false;
+
+            trips.forEach(t => {
+                totalActs += (t.activities || []).length;
+                totalBudget += parseInt(t.totalBudget) || 0;
+                if(t.expenses && t.expenses.length > 0) hasExpenses = true;
+            });
+
+            document.getElementById('statTrips').setAttribute('data-target', totalTrips);
+            document.getElementById('statDest').setAttribute('data-target', uniqueCities);
+            document.getElementById('statActs').setAttribute('data-target', totalActs);
+            document.getElementById('statBudget').setAttribute('data-target', totalBudget);
+            runCounters();
+
+            let unlocked = 0;
+            if(totalTrips > 0) { document.getElementById('badgeStarter').classList.replace('locked', 'unlocked'); unlocked++; }
+            if(totalActs >= 10) { document.getElementById('badgePlanner').classList.replace('locked', 'unlocked'); unlocked++; }
+            if(hasExpenses) { document.getElementById('badgeBudget').classList.replace('locked', 'unlocked'); unlocked++; }
+            if(uniqueCities >= 3) { document.getElementById('badgeGlobe').classList.replace('locked', 'unlocked'); unlocked++; }
+            document.getElementById('badgeCount').innerText = `${unlocked} Unlocked`;
+        }
+
+        function runCounters() {
+            const counters = document.querySelectorAll('.counter');
+            counters.forEach(counter => {
+                const updateCount = () => {
+                    const target = +counter.getAttribute('data-target');
+                    const count = +counter.innerText.replace(/[k₹,]/g, '');
+                    const inc = target / 100;
+                    if (count < target) {
+                        counter.innerText = Math.ceil(count + inc);
+                        setTimeout(updateCount, 20);
+                    } else {
+                        counter.innerText = (counter.id === 'statBudget' && target >= 1000) ? (target/1000).toFixed(1) + 'k' : target;
+                    }
+                };
+                updateCount();
+            });
+        }
+
+        function logout() { localStorage.removeItem('loggedIn'); window.location.href = "login.html"; }
+    </script>
+</body>
+</html>

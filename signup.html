@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account | Traveloop</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="main.css">
+    <style>
+        /* --- Auth Pages Base CSS (Reused from Login + Additions) --- */
+        body { overflow-x: hidden; overflow-y: auto; }
+        .auth-wrapper { display: flex; min-height: 100vh; width: 100%; }
+
+        /* Left Side */
+        .auth-left {
+            flex: 1.2;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            background-image: url('https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&q=80&w=1200');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 3rem;
+            color: var(--white);
+            overflow: hidden;
+        }
+
+        .auth-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(37, 99, 235, 0.7) 100%);
+            z-index: 1;
+        }
+
+        .auth-left-content { position: relative; z-index: 2; }
+        
+        .auth-logo {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .auth-quote { position: relative; z-index: 2; margin-top: auto; }
+        .auth-quote h1 { font-size: 3.5rem; line-height: 1.2; margin-bottom: 1rem; }
+        .auth-quote p { font-size: 1.2rem; opacity: 0.9; }
+
+        /* Floating Travel Cards (Left Side) */
+        .floating-auth-card {
+            position: absolute;
+            z-index: 2;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 1rem;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            color: white;
+            animation: float 5s ease-in-out infinite;
+        }
+        .floating-auth-card i { background: rgba(255,255,255,0.2); padding: 0.8rem; border-radius: 50%; }
+        .floating-auth-card h4 { font-size: 0.9rem; margin: 0; font-weight: 600; }
+        .floating-auth-card p { font-size: 0.75rem; margin: 0; opacity: 0.8; }
+        
+        /* Staggered Floating Cards */
+        .card-a { 
+            top: 15%; 
+            right: 10%; 
+            animation-delay: 0s; 
+        }
+
+        .card-b { 
+            top: 35%; 
+            left: 15%; 
+            animation-delay: 2s; 
+        }
+
+        .card-c { 
+            top: 55%; 
+            right: 20%; 
+            animation-delay: 1s; 
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0px); }
+        }
+
+        /* Right Side: Form */
+        .auth-right {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--bg-light);
+            position: relative;
+            padding: 2rem;
+        }
+
+        .auth-right::before {
+            content: '';
+            position: absolute;
+            top: -10%;
+            left: -10%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(37,99,235,0.1) 0%, rgba(255,255,255,0) 70%);
+            border-radius: 50%;
+        }
+
+        .auth-card {
+            width: 100%;
+            max-width: 500px;
+            padding: 2.5rem 2.5rem;
+            position: relative;
+            z-index: 2;
+            background: rgba(255, 255, 255, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            /* Inherits .glass-card from main.css */
+        }
+
+        .auth-header { text-align: center; margin-bottom: 2rem; }
+        .auth-header h2 { font-size: 2rem; color: var(--dark-navy); margin-bottom: 0.5rem; }
+        .auth-header p { color: var(--text-gray); }
+
+        /* Floating Labels CSS */
+        .form-floating {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-floating .form-control {
+            width: 100%;
+            padding: 1.25rem 1rem 0.5rem; /* Space for floating label */
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 1rem;
+            background: rgba(255, 255, 255, 0.9);
+            transition: var(--transition);
+            height: 3.5rem;
+        }
+
+        .form-floating label {
+            position: absolute;
+            top: 50%;
+            left: 1rem;
+            transform: translateY(-50%);
+            color: var(--text-gray);
+            font-size: 1rem;
+            pointer-events: none;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Trigger float on focus OR when not empty (using placeholder hack) */
+        .form-floating .form-control:focus,
+        .form-floating .form-control:not(:placeholder-shown) {
+            outline: none;
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .form-floating .form-control:focus ~ label,
+        .form-floating .form-control:not(:placeholder-shown) ~ label {
+            top: 0.5rem;
+            transform: translateY(0) scale(0.8);
+            transform-origin: left top;
+            color: var(--primary-blue);
+        }
+
+        /* Validation Colors & Shake */
+        .form-control.is-valid { border-color: #10b981; }
+        .form-control.is-valid:focus { box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1); }
+        .form-control.is-invalid { border-color: #ef4444; animation: shake 0.4s ease-in-out; }
+        .form-control.is-invalid:focus { box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1); }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-4px); }
+            40%, 80% { transform: translateX(4px); }
+        }
+
+        /* Password Specifics */
+        .password-toggle {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-gray);
+            cursor: pointer;
+            z-index: 10;
+        }
+        
+        .password-toggle:hover { color: var(--dark-navy); }
+
+        /* Password Strength Meter */
+        .strength-meter {
+            height: 4px;
+            background-color: #e2e8f0;
+            border-radius: 2px;
+            margin-top: 0.5rem;
+            overflow: hidden;
+            display: none; /* Hidden until typing */
+        }
+        .strength-bar {
+            height: 100%;
+            width: 0%;
+            transition: all 0.3s ease;
+        }
+
+        /* Password Rules Checklist */
+        .pwd-rules {
+            list-style: none;
+            padding: 0;
+            margin: 0.5rem 0 1rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.4rem;
+            font-size: 0.75rem;
+        }
+        .pwd-rules li { color: var(--text-gray); display: flex; align-items: center; gap: 5px; transition: var(--transition); }
+        .pwd-rules li i { width: 12px; }
+        .pwd-rules li.valid { color: #10b981; } /* Green */
+        .pwd-rules li.invalid { color: #ef4444; } /* Red */
+
+        /* General UI Elements */
+        .checkbox-label { display: flex; align-items: flex-start; gap: 0.5rem; cursor: pointer; color: var(--text-gray); font-size: 0.85rem; margin-bottom: 1.5rem; }
+        .checkbox-label input { margin-top: 0.25rem; }
+        .checkbox-label a { color: var(--primary-blue); font-weight: 500; }
+        
+        .btn-full { width: 100%; margin-bottom: 1rem; }
+        .btn-primary:disabled { background-color: #94a3b8; cursor: not-allowed; box-shadow: none; transform: none; }
+
+        .auth-footer { text-align: center; margin-top: 1rem; font-size: 0.95rem; color: var(--text-gray); }
+        .auth-footer a { color: var(--primary-blue); font-weight: 600; }
+        .auth-footer a:hover { text-decoration: underline; }
+
+        .back-home { position: absolute; top: 2rem; right: 2rem; color: var(--text-gray); font-weight: 500; z-index: 10; }
+        .back-home:hover { color: var(--primary-blue); }
+
+        /* Success Popup Modal */
+        .success-modal {
+            position: fixed; inset: 0; background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(5px);
+            display: none; align-items: center; justify-content: center; z-index: 9999;
+            opacity: 0; transition: opacity 0.3s;
+        }
+        .success-content {
+            background: white; padding: 3rem; border-radius: 16px; text-align: center;
+            transform: scale(0.8); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .success-content i { font-size: 4rem; color: #10b981; margin-bottom: 1rem; }
+        .success-content h3 { font-size: 1.8rem; color: var(--dark-navy); margin-bottom: 0.5rem; }
+        .success-content p { color: var(--text-gray); }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .auth-wrapper { flex-direction: column; }
+            .auth-left { display: none; }
+            .auth-right { min-height: 100vh; padding: 2rem 1rem; }
+            .back-home { top: 1rem; right: 1rem; }
+            .pwd-rules { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="auth-wrapper">
+        <div class="auth-left">
+            <div class="auth-overlay"></div>
+            
+            <div class="floating-auth-card card-a">
+                <i class="fa-solid fa-plane-departure"></i>
+                <div>
+                    <h4>Plan Anywhere</h4>
+                    <p>150+ Countries supported</p>
+                </div>
+            </div>
+            <div class="floating-auth-card card-b">
+                <i class="fa-solid fa-users"></i>
+                <div>
+                    <h4>Collaborate</h4>
+                    <p>Invite friends to edit</p>
+                </div>
+            </div>
+            <div class="floating-auth-card card-c">
+                <i class="fa-solid fa-map-location-dot"></i>
+                <div>
+                    <h4>Discover Local Gems</h4>
+                    <p>Find unique, uncrowded experiences.</p>
+                </div>
+            </div>
+
+            <a href="index.html" class="auth-logo auth-left-content">
+                <i class="fa-solid fa-location-dot"></i> Traveloop
+            </a>
+
+            <div class="auth-quote">
+                <h1>Begin your <br>journey with <br>us today.</h1>
+                <p>Create a free account to unlock smart itineraries, budget tracking, and more.</p>
+            </div>
+        </div>
+
+        <div class="auth-right">
+            <a href="index.html" class="back-home"><i class="fa-solid fa-arrow-left"></i> Home</a>
+            
+            <div class="auth-card glass-card">
+                <div class="auth-header">
+                    <h2>Create Account</h2>
+                    <p>Join the Traveloop community.</p>
+                </div>
+
+                <form id="signupForm" novalidate>
+                    <div class="form-floating">
+                        <input type="text" id="fullname" class="form-control" placeholder=" " required>
+                        <label for="fullname">Full Name</label>
+                    </div>
+
+                    <div class="form-floating">
+                        <input type="email" id="email" class="form-control" placeholder=" " required>
+                        <label for="email">Email Address</label>
+                    </div>
+
+                    <div class="form-floating" style="margin-bottom: 0.5rem;">
+                        <input type="password" id="password" class="form-control" placeholder=" " required>
+                        <label for="password">Password</label>
+                        <i class="fa-regular fa-eye password-toggle" id="togglePassword"></i>
+                    </div>
+                    
+                    <div class="strength-meter" id="strengthMeter">
+                        <div class="strength-bar" id="strengthBar"></div>
+                    </div>
+
+                    <ul class="pwd-rules" id="pwdRules">
+                        <li id="rule-len" class="invalid"><i class="fa-solid fa-xmark"></i> 8+ Characters</li>
+                        <li id="rule-upper" class="invalid"><i class="fa-solid fa-xmark"></i> 1 Uppercase</li>
+                        <li id="rule-lower" class="invalid"><i class="fa-solid fa-xmark"></i> 1 Lowercase</li>
+                        <li id="rule-num" class="invalid"><i class="fa-solid fa-xmark"></i> 1 Number</li>
+                        <li id="rule-spec" class="invalid"><i class="fa-solid fa-xmark"></i> 1 Special Char</li>
+                    </ul>
+
+                    <div class="form-floating" style="margin-bottom: 1rem;">
+                        <input type="password" id="confirmPassword" class="form-control" placeholder=" " required>
+                        <label for="confirmPassword">Confirm Password</label>
+                        <i class="fa-regular fa-eye password-toggle" id="toggleConfirm"></i>
+                    </div>
+                    <div id="matchMessage" style="font-size: 0.8rem; margin-bottom: 1.5rem; display: none;"></div>
+
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="terms" required>
+                        <span>I agree to the <a href="#">Terms & Conditions</a> and <a href="#">Privacy Policy</a>.</span>
+                    </label>
+
+                    <button type="submit" id="signupBtn" class="btn btn-primary btn-full" disabled>Create Account</button>
+                </form>
+
+                <div class="auth-footer">
+                    Already have an account? <a href="login.html">Sign in</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="success-modal" id="successModal">
+        <div class="success-content" id="successContent">
+            <i class="fa-solid fa-circle-check"></i>
+            <h3>Account Created!</h3>
+            <p>Welcome to Traveloop. Redirecting you to login...</p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // DOM Elements
+            const form = document.getElementById('signupForm');
+            const fullnameInput = document.getElementById('fullname');
+            const emailInput = document.getElementById('email');
+            const passwordInput = document.getElementById('password');
+            const confirmInput = document.getElementById('confirmPassword');
+            const termsCheck = document.getElementById('terms');
+            const signupBtn = document.getElementById('signupBtn');
+            const matchMessage = document.getElementById('matchMessage');
+            
+            // Password Toggle Setup
+            const setupToggle = (toggleId, inputId) => {
+                document.getElementById(toggleId).addEventListener('click', function() {
+                    const input = document.getElementById(inputId);
+                    const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+                    input.setAttribute('type', type);
+                    this.classList.toggle('fa-eye');
+                    this.classList.toggle('fa-eye-slash');
+                });
+            };
+            setupToggle('togglePassword', 'password');
+            setupToggle('toggleConfirm', 'confirmPassword');
+
+            // Validation Rules
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            
+            // State tracking
+            let isNameValid = false;
+            let isEmailValid = false;
+            let isPassValid = false;
+            let isMatchValid = false;
+
+            // Update Rule DOM Function
+            const updateRule = (ruleId, isValid) => {
+                const el = document.getElementById(ruleId);
+                const icon = el.querySelector('i');
+                if (isValid) {
+                    el.className = 'valid';
+                    icon.className = 'fa-solid fa-check';
+                } else {
+                    el.className = 'invalid';
+                    icon.className = 'fa-solid fa-xmark';
+                }
+            };
+
+            // 1. Name Validation
+            fullnameInput.addEventListener('input', () => {
+                const val = fullnameInput.value.trim();
+                // Min 3 chars and NOT only numbers
+                isNameValid = val.length >= 3 && !/^\d+$/.test(val);
+                fullnameInput.className = `form-control ${val === '' ? '' : (isNameValid ? 'is-valid' : 'is-invalid')}`;
+                checkFormValidity();
+            });
+
+            // 2. Email Validation
+            emailInput.addEventListener('input', () => {
+                const val = emailInput.value.trim();
+                isEmailValid = emailRegex.test(val);
+                emailInput.className = `form-control ${val === '' ? '' : (isEmailValid ? 'is-valid' : 'is-invalid')}`;
+                checkFormValidity();
+            });
+
+            // 3. Password Live Validation & Strength
+            passwordInput.addEventListener('input', () => {
+                const val = passwordInput.value;
+                document.getElementById('strengthMeter').style.display = 'block';
+
+                const rules = {
+                    len: val.length >= 8,
+                    upper: /[A-Z]/.test(val),
+                    lower: /[a-z]/.test(val),
+                    num: /[0-9]/.test(val),
+                    spec: /[^A-Za-z0-9]/.test(val)
+                };
+
+                // Update DOM rules
+                updateRule('rule-len', rules.len);
+                updateRule('rule-upper', rules.upper);
+                updateRule('rule-lower', rules.lower);
+                updateRule('rule-num', rules.num);
+                updateRule('rule-spec', rules.spec);
+
+                // Calculate Strength
+                const score = Object.values(rules).filter(Boolean).length;
+                isPassValid = score === 5;
+                passwordInput.className = `form-control ${val === '' ? '' : (isPassValid ? 'is-valid' : 'is-invalid')}`;
+
+                const bar = document.getElementById('strengthBar');
+                bar.style.width = `${(score / 5) * 100}%`;
+                
+                if (score <= 2) bar.style.backgroundColor = '#ef4444'; // Red
+                else if (score <= 4) bar.style.backgroundColor = '#f59e0b'; // Orange
+                else bar.style.backgroundColor = '#10b981'; // Green
+
+                // Re-trigger match validation if confirm field isn't empty
+                if(confirmInput.value !== '') triggerConfirmCheck();
+                checkFormValidity();
+            });
+
+            // 4. Confirm Password Match
+            const triggerConfirmCheck = () => {
+                const pass = passwordInput.value;
+                const conf = confirmInput.value;
+                
+                matchMessage.style.display = 'block';
+                if (conf === '') {
+                    isMatchValid = false;
+                    matchMessage.style.display = 'none';
+                    confirmInput.className = 'form-control';
+                } else if (pass === conf) {
+                    isMatchValid = true;
+                    matchMessage.textContent = 'Passwords match!';
+                    matchMessage.style.color = '#10b981';
+                    confirmInput.className = 'form-control is-valid';
+                } else {
+                    isMatchValid = false;
+                    matchMessage.textContent = 'Passwords do not match.';
+                    matchMessage.style.color = '#ef4444';
+                    confirmInput.className = 'form-control is-invalid';
+                }
+                checkFormValidity();
+            };
+            confirmInput.addEventListener('input', triggerConfirmCheck);
+
+            // 5. Terms Check
+            termsCheck.addEventListener('change', checkFormValidity);
+
+            // Check overall form validity to enable/disable button
+            function checkFormValidity() {
+                if (isNameValid && isEmailValid && isPassValid && isMatchValid && termsCheck.checked) {
+                    signupBtn.disabled = false;
+                } else {
+                    signupBtn.disabled = true;
+                }
+            }
+
+            // Form Submit Flow
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                
+                // Final safeguard check
+                if (!isNameValid || !isEmailValid || !isPassValid || !isMatchValid || !termsCheck.checked) {
+                    form.classList.add('is-invalid'); // Add shake class or trigger manual shakes
+                    return;
+                }
+
+                // Show button loading state
+                const originalText = signupBtn.innerHTML;
+                signupBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Creating Account...';
+                signupBtn.disabled = true;
+
+                // Create User Object
+                const user = {
+                    name: fullnameInput.value.trim(),
+                    email: emailInput.value.trim(),
+                    password: passwordInput.value // In a real app, NEVER store raw passwords!
+                };
+
+                // Save to LocalStorage
+                localStorage.setItem('user', JSON.stringify(user));
+                // Automatically log them in for a smoother flow (optional but good UX)
+                localStorage.setItem('loggedIn', 'true');
+                localStorage.setItem('userEmail', user.email);
+
+                // Simulate API call delay, then show success modal
+                setTimeout(() => {
+                    const modal = document.getElementById('successModal');
+                    const content = document.getElementById('successContent');
+                    
+                    modal.style.display = 'flex';
+                    // Trigger reflow to apply opacity/transform transitions
+                    void modal.offsetWidth; 
+                    modal.style.opacity = '1';
+                    content.style.transform = 'scale(1)';
+
+                    // Redirect to dashboard (or login) after showing success
+                    setTimeout(() => {
+                        window.location.href = 'login.html'; // Or dashboard.html
+                    }, 2000);
+                }, 1000);
+            });
+        });
+    </script>
+</body>
+</html>

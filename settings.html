@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings | Traveloop</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="main.css">
+    <style>
+        /* CSS Variables for Light/Dark Mode */
+        :root {
+            --primary-blue: #2563eb;
+            --bg-page: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --input-bg: #f8fafc;
+            --danger-bg: #fef2f2;
+            --danger-text: #ef4444;
+            --danger-border: #fecaca;
+        }
+
+        /* --- DARK MODE OVERRIDES --- */
+        body.dark-mode {
+            --bg-page: #0f172a;
+            --card-bg: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
+            --input-bg: #0f172a;
+            --danger-bg: rgba(239, 68, 68, 0.1);
+            --danger-border: rgba(239, 68, 68, 0.3);
+        }
+
+        body { background-color: var(--bg-page) !important; color: var(--text-main); font-family: 'Poppins', sans-serif; transition: background-color 0.3s ease; }
+
+        /* Settings Hero Banner */
+        .settings-hero {
+            height: 280px;
+            background: linear-gradient(135deg, #0f172a 0%, #3b82f6 100%);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+        }
+        .settings-hero::after {
+            content: ''; position: absolute; inset: 0;
+            background: url('https://images.unsplash.com/photo-1516738901171-8eb4fc13bd20?auto=format&fit=crop&q=80&w=1920') center/cover;
+            opacity: 0.15;
+        }
+        .hero-content { position: relative; z-index: 2; margin-top: 40px; }
+        .hero-content h1 { font-size: 2.8rem; font-weight: 800; margin-bottom: 0.5rem; text-shadow: 0 4px 15px rgba(0,0,0,0.3); letter-spacing: -1px;}
+        .hero-content p { font-size: 1.1rem; opacity: 0.9; }
+
+        /* Settings Layout Container */
+        .settings-container { 
+            max-width: 1000px; margin: -50px auto 5rem; padding: 0 2rem; 
+            position: relative; z-index: 10; display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; 
+        }
+
+        /* Glass Cards */
+        .glass-card { 
+            background-color: var(--card-bg) !important; border-radius: 24px; padding: 2rem; 
+            box-shadow: 0 10px 40px -10px rgba(0,0,0,0.1) !important; border: 1px solid var(--border-color); 
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+        .card-header { display: flex; align-items: center; gap: 12px; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; transition: 0.3s;}
+        .card-header i { font-size: 1.4rem; color: var(--primary-blue); }
+        .card-header h3 { margin: 0; font-size: 1.25rem; color: var(--text-main); font-weight: 700; }
+
+        /* Setting Items & Toggles */
+        .setting-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem; }
+        .setting-item:last-child { margin-bottom: 0; }
+        .setting-info h4 { margin: 0 0 0.2rem 0; font-size: 1rem; color: var(--text-main); font-weight: 600;}
+        .setting-info p { margin: 0; font-size: 0.8rem; color: var(--text-muted); }
+
+        /* Custom Toggle Switch */
+        .toggle-switch { position: relative; display: inline-block; width: 48px; height: 26px; flex-shrink: 0;}
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e1; transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; box-shadow: 0 2px 5px rgba(0,0,0,0.2);}
+        input:checked + .slider { background-color: var(--primary-blue); }
+        input:checked + .slider:before { transform: translateX(22px); }
+
+        /* Inputs & Selects */
+        .form-group { margin-bottom: 1.2rem; }
+        .form-group label { display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.4rem; }
+        .form-control { 
+            width: 100%; padding: 0.8rem 1rem; border: 1px solid var(--border-color); border-radius: 12px; 
+            font-family: inherit; background: var(--input-bg); color: var(--text-main); transition: 0.3s;
+        }
+        .form-control:focus { outline: none; border-color: var(--primary-blue); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+
+        /* Buttons */
+        .btn-action { 
+            width: 100%; padding: 0.8rem; border-radius: 12px; border: 1px solid var(--border-color); 
+            background: var(--input-bg); color: var(--text-main); font-weight: 600; cursor: pointer; 
+            transition: 0.3s; font-size: 0.95rem; margin-bottom: 0.8rem; display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .btn-action:hover { border-color: var(--primary-blue); color: var(--primary-blue); }
+        
+        .danger-zone { border: 2px dashed var(--danger-border); background: var(--danger-bg); }
+        .danger-zone .card-header i { color: var(--danger-text); }
+        .btn-danger { background: var(--danger-text); color: white; border: none; }
+        .btn-danger:hover { background: #b91c1c; color: white; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(239,68,68,0.3); }
+
+        .navbar:not(.scrolled) .nav-links a:not(.nav-btn), .navbar:not(.scrolled) .logo, .navbar:not(.scrolled) .hamburger { color: white !important; }
+        .footer { background: var(--card-bg); padding: 2rem; border-top: 1px solid var(--border-color); text-align: center; margin-top: 4rem;}
+
+        /* Animations */
+        .fade-in-up { opacity: 0; transform: translateY(30px); animation: fadeInUp 0.6s forwards; }
+        @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+        .delay-1 { animation-delay: 0.1s; } .delay-2 { animation-delay: 0.2s; } .delay-3 { animation-delay: 0.3s; }
+
+        @media (max-width: 900px) {
+            .settings-container { grid-template-columns: 1fr; margin-top: -30px; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo"><i class="fa-solid fa-location-dot"></i> Traveloop</a>
+            <div class="nav-links" id="nav-links"></div>
+            <div class="hamburger" id="hamburger"><i class="fa-solid fa-bars"></i></div>
+        </div>
+    </nav>
+
+    <header class="settings-hero">
+        <div class="hero-content fade-in-up">
+            <h1>Settings <i class="fa-solid fa-gear" style="font-size: 2.2rem; opacity: 0.8;"></i></h1>
+            <p>Customize your Traveloop experience.</p>
+        </div>
+    </header>
+
+    <main class="settings-container">
+        
+        <div>
+            <div class="glass-card fade-in-up delay-1">
+                <div class="card-header">
+                    <i class="fa-solid fa-palette"></i>
+                    <h3>Appearance</h3>
+                </div>
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <h4>Dark Mode</h4>
+                        <p>Switch to a darker, eye-friendly theme.</p>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="toggleDarkMode">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <h4>Compact View</h4>
+                        <p>Reduce spacing in itinerary builder.</p>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="toggleCompact">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="glass-card fade-in-up delay-2">
+                <div class="card-header">
+                    <i class="fa-solid fa-compass"></i>
+                    <h3>Travel Preferences</h3>
+                </div>
+                <div class="form-group">
+                    <label>Preferred Currency</label>
+                    <select id="prefCurrency" class="form-control">
+                        <option value="INR">Indian Rupee (₹)</option>
+                        <option value="USD">US Dollar ($)</option>
+                        <option value="EUR">Euro (€)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Default Travel Style</label>
+                    <select id="prefStyle" class="form-control">
+                        <option value="Adventure">Adventure & Outdoors</option>
+                        <option value="Luxury">Luxury & Comfort</option>
+                        <option value="Budget">Budget Backpacking</option>
+                        <option value="Cultural">Cultural & Historical</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="glass-card fade-in-up delay-3">
+                <div class="card-header">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <h3>Privacy & Sharing</h3>
+                </div>
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <h4>Public Profile</h4>
+                        <p>Allow others to see your travel stats.</p>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="togglePublic" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <h4>Share Trips to Explore</h4>
+                        <p>Contribute your trips to trending packages.</p>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="toggleShare" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <div class="glass-card fade-in-up delay-1">
+                <div class="card-header">
+                    <i class="fa-solid fa-bell"></i>
+                    <h3>Notifications</h3>
+                </div>
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <h4>Trip Reminders</h4>
+                        <p>Get alerted 24 hours before your trip.</p>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="notifReminders" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <h4>Budget Alerts</h4>
+                        <p>Warn me when I use 80% of my budget.</p>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="notifBudget" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <h4>Packing Reminders</h4>
+                        <p>Remind me to check my packing list.</p>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="notifPacking">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="glass-card fade-in-up delay-2">
+                <div class="card-header">
+                    <i class="fa-solid fa-user"></i>
+                    <h3>Account Settings</h3>
+                </div>
+                <button class="btn-action" onclick="window.location.href='profile.html'"><i class="fa-solid fa-pen"></i> Edit Profile Info</button>
+                <button class="btn-action" onclick="alert('Verification email sent!')"><i class="fa-solid fa-envelope"></i> Update Email Address</button>
+                <button class="btn-action" onclick="alert('Password reset link sent!')"><i class="fa-solid fa-key"></i> Change Password</button>
+            </div>
+
+            <div class="glass-card danger-zone fade-in-up delay-3">
+                <div class="card-header">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    <h3 style="color: var(--danger-text);">Danger Zone</h3>
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.5rem;">These actions are permanent and cannot be undone.</p>
+                
+                <button class="btn-action" style="color: var(--danger-text); border-color: var(--danger-border);" onclick="clearAllTrips()">
+                    <i class="fa-solid fa-trash-can"></i> Delete All Trips
+                </button>
+                <button class="btn-action btn-danger" onclick="deleteAccount()">
+                    <i class="fa-solid fa-user-xmark"></i> Delete Account
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p style="color: var(--text-muted); font-size: 0.9rem;">Traveloop App Version 1.0.0 • Made for Hackathon</p>
+        <p style="color: var(--text-muted); margin-top: 5px;">&copy; 2026 Traveloop. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Check Login & Inject Navbar
+        document.addEventListener('DOMContentLoaded', () => {
+            if(localStorage.getItem("loggedIn") !== "true") window.location.href = "login.html";
+            
+            // Standard Navbar
+            document.getElementById('nav-links').innerHTML = `
+                <a href="dashboard.html">Dashboard</a>
+                <a href="my_trips.html">My Trips</a>
+                <a href="explore_trips.html">Explore</a>
+                <a href="budget.html">Budget</a>
+                <a href="profile.html">Profile</a>
+                <a href="#" onclick="logout()" class="nav-btn" style="background: rgba(239, 68, 68, 0.1); color: #ef4444; padding: 0.5rem 1.2rem; border-radius: 8px; margin-left: 10px; font-weight: 600;">Logout</a>
+            `;
+
+            loadSettings();
+            setupEventListeners();
+
+            // Navbar Scroll Effect
+            window.addEventListener('scroll', () => {
+                const nav = document.getElementById('navbar');
+                if (window.scrollY > 50) nav.classList.add('scrolled');
+                else nav.classList.remove('scrolled');
+            });
+        });
+
+        // Load Settings from LocalStorage
+        function loadSettings() {
+            // Apply Theme immediately
+            const currentTheme = localStorage.getItem('theme');
+            if (currentTheme === 'dark') {
+                document.body.classList.add('dark-mode');
+                document.getElementById('toggleDarkMode').checked = true;
+            }
+
+            // Load other settings object
+            const savedSettings = JSON.parse(localStorage.getItem('appSettings')) || {
+                compact: false,
+                currency: 'INR',
+                style: 'Adventure',
+                notifReminders: true,
+                notifBudget: true,
+                notifPacking: false,
+                publicProfile: true,
+                shareTrips: true
+            };
+
+            // Populate UI
+            document.getElementById('toggleCompact').checked = savedSettings.compact;
+            document.getElementById('prefCurrency').value = savedSettings.currency;
+            document.getElementById('prefStyle').value = savedSettings.style;
+            document.getElementById('notifReminders').checked = savedSettings.notifReminders;
+            document.getElementById('notifBudget').checked = savedSettings.notifBudget;
+            document.getElementById('notifPacking').checked = savedSettings.notifPacking;
+            document.getElementById('togglePublic').checked = savedSettings.publicProfile;
+            document.getElementById('toggleShare').checked = savedSettings.shareTrips;
+        }
+
+        // Save Settings to LocalStorage
+        function saveSettings() {
+            const settings = {
+                compact: document.getElementById('toggleCompact').checked,
+                currency: document.getElementById('prefCurrency').value,
+                style: document.getElementById('prefStyle').value,
+                notifReminders: document.getElementById('notifReminders').checked,
+                notifBudget: document.getElementById('notifBudget').checked,
+                notifPacking: document.getElementById('notifPacking').checked,
+                publicProfile: document.getElementById('togglePublic').checked,
+                shareTrips: document.getElementById('toggleShare').checked
+            };
+            localStorage.setItem('appSettings', JSON.stringify(settings));
+        }
+
+        // Setup Auto-Save Listeners
+        function setupEventListeners() {
+            const inputs = document.querySelectorAll('input[type="checkbox"], select');
+            inputs.forEach(input => {
+                input.addEventListener('change', () => {
+                    // Handle Dark Mode specifically
+                    if (input.id === 'toggleDarkMode') {
+                        if (input.checked) {
+                            document.body.classList.add('dark-mode');
+                            localStorage.setItem('theme', 'dark');
+                        } else {
+                            document.body.classList.remove('dark-mode');
+                            localStorage.setItem('theme', 'light');
+                        }
+                    }
+                    // Auto-save all other settings
+                    saveSettings();
+                });
+            });
+        }
+
+        // Danger Zone Functions
+        function clearAllTrips() {
+            if(confirm("🚨 WARNING: Are you absolutely sure you want to delete ALL your trips, itineraries, budgets, and packing lists? This cannot be undone.")) {
+                localStorage.removeItem("trips");
+                alert("All trip data has been deleted.");
+            }
+        }
+
+        function deleteAccount() {
+            if(confirm("🚨 FINAL WARNING: Do you want to permanently delete your Traveloop account and all associated data?")) {
+                localStorage.clear(); // Wipes everything
+                alert("Account deleted. We're sorry to see you go!");
+                window.location.href = "login.html";
+            }
+        }
+
+        function logout() { 
+            localStorage.removeItem('loggedIn'); 
+            window.location.href = "login.html"; 
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explore Trips | Traveloop</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="main.css">
+    <style>
+        /* --- Explore Page Specific CSS --- */
+        
+        /* Explore Hero / Search Section */
+        .explore-hero {
+            padding: 10rem 2rem 6rem;
+            background-image: linear-gradient(to bottom, rgba(15, 23, 42, 0.85) 0%, rgba(15, 23, 42, 0.3) 50%, var(--bg-light) 100%), 
+                              url('https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=1920');
+            background-size: cover;
+            background-position: center;
+            color: var(--white);
+            text-align: center;
+            position: relative;
+        }
+
+        .explore-hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            margin: 0 auto;
+            color: #ffffff !important; 
+            text-shadow: 0 4px 15px rgba(0, 0, 0, 0.6); 
+        }
+
+        .explore-hero h1 { font-size: 3rem; margin-bottom: 1rem; }
+        .explore-hero p { font-size: 1.1rem; opacity: 0.95; margin-bottom: 2.5rem; text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8); }
+
+        /* Navbar Text Visibility Fix */
+        .navbar:not(.scrolled) .nav-links a:not(.nav-btn),
+        .navbar:not(.scrolled) .logo,
+        .navbar:not(.scrolled) .hamburger {
+            color: #ffffff !important; 
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.7); 
+        }
+        .navbar:not(.scrolled) .nav-links a.active {
+            color: #93c5fd !important; 
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.7);
+        }
+
+        /* Search Bar */
+        .search-container {
+            display: flex;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 0.5rem;
+            border-radius: 50px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            max-width: 600px;
+            margin: 0 auto;
+            backdrop-filter: blur(10px);
+        }
+
+        .search-input {
+            flex: 1; border: none; padding: 0.5rem 1.5rem;
+            font-family: inherit; font-size: 1rem; background: transparent;
+            color: var(--dark-navy); outline: none; text-shadow: none;
+        }
+
+        .search-btn {
+            background: var(--primary-blue); color: white; border: none;
+            padding: 0.8rem 2rem; border-radius: 40px; font-weight: 500;
+            cursor: pointer; transition: var(--transition); text-shadow: none;
+        }
+        .search-btn:hover { background: var(--dark-navy); transform: scale(1.05); }
+
+        /* Category Filters */
+        .filters-section { padding: 2rem 2rem 0; max-width: 1200px; margin: 0 auto; }
+        .filter-scroll {
+            display: flex; gap: 1rem; overflow-x: auto; padding-bottom: 1rem;
+            -ms-overflow-style: none; scrollbar-width: none;  
+        }
+        .filter-scroll::-webkit-scrollbar { display: none; }
+
+        .filter-pill {
+            padding: 0.6rem 1.5rem; background: white; border: 1px solid #e2e8f0;
+            border-radius: 30px; color: var(--text-gray); font-weight: 500;
+            white-space: nowrap; cursor: pointer; transition: var(--transition);
+            display: flex; align-items: center; gap: 0.5rem;
+        }
+        .filter-pill:hover, .filter-pill.active {
+            background: var(--primary-blue); color: white;
+            border-color: var(--primary-blue); box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+        }
+
+        /* Grid Layouts & Cards */
+        .section-padding { padding: 4rem 2rem; max-width: 1200px; margin: 0 auto; }
+        .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 2rem; }
+
+        .travel-card {
+            background: white; border-radius: 16px; overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05); transition: var(--transition);
+            border: 1px solid rgba(255,255,255,0.5);
+        }
+        .travel-card:hover { transform: translateY(-10px); box-shadow: 0 15px 30px rgba(37, 99, 235, 0.15); border-color: rgba(37, 99, 235, 0.3); }
+        .card-img-wrapper { position: relative; height: 200px; overflow: hidden; }
+        .card-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; }
+        .travel-card:hover .card-img { transform: scale(1.1); }
+        
+        .card-rating {
+            position: absolute; top: 1rem; right: 1rem; background: rgba(255,255,255,0.9);
+            padding: 0.3rem 0.6rem; border-radius: 20px; font-size: 0.85rem; font-weight: 600;
+            color: var(--dark-navy); display: flex; align-items: center; gap: 0.3rem; backdrop-filter: blur(4px);
+        }
+        .card-rating i { color: #fbbf24; }
+        .card-body { padding: 1.5rem; }
+        .card-location { font-size: 0.85rem; color: var(--text-gray); margin-bottom: 0.3rem; display: block; }
+        .card-title { font-size: 1.25rem; color: var(--dark-navy); margin-bottom: 0.5rem; font-weight: 600; }
+        .card-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #f1f5f9; }
+        .card-price { font-weight: 600; color: var(--primary-blue); font-size: 1.1rem; }
+        .card-price span { font-size: 0.8rem; color: var(--text-gray); font-weight: 400; }
+
+        .blog-card { display: flex; flex-direction: column; }
+        .blog-card .card-img-wrapper { height: 180px; }
+        .blog-tag { color: var(--primary-blue); font-size: 0.8rem; font-weight: 600; text-transform: uppercase; margin-bottom: 0.5rem; display: block; }
+        .blog-title { font-size: 1.1rem; line-height: 1.4; margin-bottom: 1rem; }
+        .blog-link { color: var(--dark-navy); font-weight: 500; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 0.5rem; transition: var(--transition); }
+        .blog-link:hover { color: var(--primary-blue); gap: 0.8rem; }
+
+        /* Login Required Modal */
+        .login-modal {
+            position: fixed; inset: 0; background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(5px);
+            display: none; align-items: center; justify-content: center; z-index: 9999;
+            opacity: 0; transition: opacity 0.3s;
+        }
+        .login-content {
+            background: white; padding: 3rem; border-radius: 16px; text-align: center;
+            transform: scale(0.8); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            max-width: 400px; width: 90%;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+        .login-content i { font-size: 3.5rem; color: var(--primary-blue); margin-bottom: 1rem; }
+        .login-content h3 { font-size: 1.5rem; color: var(--dark-navy); margin-bottom: 0.5rem; }
+        .login-content p { color: var(--text-gray); margin-bottom: 1.5rem; }
+        .login-modal-buttons { display: flex; gap: 1rem; justify-content: center; }
+
+        /* Scroll Animations */
+        .fade-in-up { opacity: 0; transform: translateY(30px); transition: opacity 0.8s ease-out, transform 0.8s ease-out; }
+        .fade-in-up.visible { opacity: 1; transform: translateY(0); }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo"><i class="fa-solid fa-location-dot"></i> Traveloop</a>
+            
+            <div class="nav-links" id="nav-links">
+                <a href="index.html">Home</a>
+                <a href="explore_trips.html" class="active" style="color: var(--primary-blue); font-weight: 600;">Explore</a>
+                <a href="login.html" class="nav-btn login-btn">Login</a>
+                <a href="signup.html" class="nav-btn signup-btn">Sign Up</a>
+            </div>
+
+            <div class="hamburger" id="hamburger">
+                <i class="fa-solid fa-bars"></i>
+            </div>
+        </div>
+    </nav>
+
+    <header class="explore-hero">
+        <div class="explore-hero-content fade-in-up visible">
+            <div class="breadcrumb-container">
+                <a href="index.html">Home</a> 
+                <span class="breadcrumb-separator"><i class="fa-solid fa-chevron-right"></i></span>
+                <span>Explore</span>
+            </div>
+            <h1>Where to next?</h1>
+            <p>Discover famous destinations, trending packages, and travel inspiration.</p>
+            
+            <div class="search-container">
+                <input type="text" id="searchInput" class="search-input" placeholder="Search destinations, cities, or packages...">
+                <button class="search-btn" onclick="searchTrips()"><i class="fa-solid fa-magnifying-glass"></i> Search</button>
+            </div>
+
+        </div>
+    </header>
+
+    <section class="filters-section fade-in-up">
+        <div class="filter-scroll">
+            <div class="filter-pill active"><i class="fa-solid fa-fire"></i> Trending</div>
+            <div class="filter-pill"><i class="fa-solid fa-umbrella-beach"></i> Beach</div>
+            <div class="filter-pill"><i class="fa-solid fa-mountain"></i> Mountains</div>
+            <div class="filter-pill"><i class="fa-solid fa-person-hiking"></i> Adventure</div>
+            <div class="filter-pill"><i class="fa-solid fa-gem"></i> Luxury</div>
+            <div class="filter-pill"><i class="fa-solid fa-wallet"></i> Budget</div>
+            <div class="filter-pill"><i class="fa-solid fa-landmark"></i> Cultural</div>
+        </div>
+    </section>
+
+    <section class="section-padding fade-in-up">
+        <div class="section-header" style="text-align: left; margin-bottom: 2rem;">
+            <h2>Top Destinations</h2>
+            <p>Places travelers are loving right now.</p>
+        </div>
+        
+        <div class="grid-container" id="destinationsGrid">
+            <div class="travel-card glass-card">
+                <div class="card-img-wrapper">
+                    <span class="card-rating"><i class="fa-solid fa-star"></i> 4.9</span>
+                    <img src="https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&q=80&w=600" class="card-img" alt="Dubai">
+                </div>
+                <div class="card-body">
+                    <span class="card-location"><i class="fa-solid fa-location-dot"></i> United Arab Emirates</span>
+                    <h3 class="card-title">Dubai</h3>
+                    <div class="card-footer">
+                        <div class="card-price">Est. $1,200 <span>/trip</span></div>
+                        <span class="btn btn-outline" style="color: var(--primary-blue); border-color: var(--primary-blue); padding: 0.4rem 1rem;">Explore</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="travel-card glass-card">
+                <div class="card-img-wrapper">
+                    <span class="card-rating"><i class="fa-solid fa-star"></i> 4.8</span>
+                    <img src="https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&q=80&w=600" class="card-img" alt="Tokyo">
+                </div>
+                <div class="card-body">
+                    <span class="card-location"><i class="fa-solid fa-location-dot"></i> Japan</span>
+                    <h3 class="card-title">Tokyo</h3>
+                    <div class="card-footer">
+                        <div class="card-price">Est. $1,500 <span>/trip</span></div>
+                        <span class="btn btn-outline" style="color: var(--primary-blue); border-color: var(--primary-blue); padding: 0.4rem 1rem;">Explore</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="travel-card glass-card">
+                <div class="card-img-wrapper">
+                    <span class="card-rating"><i class="fa-solid fa-star"></i> 4.7</span>
+                    <img src="https://images.unsplash.com/photo-1533929736458-ca588d08c8be?auto=format&fit=crop&q=80&w=600" class="card-img" alt="London">
+                </div>
+                <div class="card-body">
+                    <span class="card-location"><i class="fa-solid fa-location-dot"></i> United Kingdom</span>
+                    <h3 class="card-title">London</h3>
+                    <div class="card-footer">
+                        <div class="card-price">Est. $1,100 <span>/trip</span></div>
+                        <span class="btn btn-outline" style="color: var(--primary-blue); border-color: var(--primary-blue); padding: 0.4rem 1rem;">Explore</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="travel-card glass-card">
+                <div class="card-img-wrapper">
+                    <span class="card-rating"><i class="fa-solid fa-star"></i> 4.9</span>
+                    <img src="https://images.unsplash.com/photo-1499856871958-5b9627545d1a?auto=format&fit=crop&q=80&w=600" class="card-img" alt="Paris">
+                </div>
+                <div class="card-body">
+                    <span class="card-location"><i class="fa-solid fa-location-dot"></i> France</span>
+                    <h3 class="card-title">Paris</h3>
+                    <div class="card-footer">
+                        <div class="card-price">Est. $1,300 <span>/trip</span></div>
+                        <span class="btn btn-outline" style="color: var(--primary-blue); border-color: var(--primary-blue); padding: 0.4rem 1rem;">Explore</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section-padding fade-in-up" style="background-color: var(--white); border-radius: 24px; margin: 2rem auto;">
+        <div class="section-header" style="text-align: left; margin-bottom: 2rem;">
+            <h2>Trending Packages</h2>
+            <p>Curated itineraries built by the community.</p>
+        </div>
+        
+        <div class="grid-container">
+            <div class="travel-card">
+                <div class="card-img-wrapper">
+                    <img src="https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?auto=format&fit=crop&q=80&w=600" class="card-img" alt="Goa">
+                </div>
+                <div class="card-body">
+                    <span class="card-location">3 Days • 2 Nights</span>
+                    <h3 class="card-title">Goa Weekend Escape</h3>
+                    <p style="font-size: 0.9rem; color: var(--text-gray); margin-bottom: 1rem;">Beach hopping, seafood, and vibrant nightlife.</p>
+                    <span class="btn btn-primary" style="width: 100%; padding: 0.5rem; display: block; text-align: center;">View Itinerary</span>
+                </div>
+            </div>
+
+            <div class="travel-card">
+                <div class="card-img-wrapper">
+                    <img src="https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&q=80&w=600" class="card-img" alt="Kyoto">
+                </div>
+                <div class="card-body">
+                    <span class="card-location">7 Days • 6 Nights</span>
+                    <h3 class="card-title">Classic Japan Tour</h3>
+                    <p style="font-size: 0.9rem; color: var(--text-gray); margin-bottom: 1rem;">Tokyo, Kyoto, and Osaka highlights.</p>
+                    <span class="btn btn-primary" style="width: 100%; padding: 0.5rem; display: block; text-align: center;">View Itinerary</span>
+                </div>
+            </div>
+
+            <div class="travel-card">
+                <div class="card-img-wrapper">
+                    <img src="https://images.unsplash.com/photo-1498307833015-e7b400441eb8?auto=format&fit=crop&q=80&w=600" class="card-img" alt="Santorini">
+                </div>
+                <div class="card-body">
+                    <span class="card-location">5 Days • 4 Nights</span>
+                    <h3 class="card-title">Santorini Couple Retreat</h3>
+                    <p style="font-size: 0.9rem; color: var(--text-gray); margin-bottom: 1rem;">Sunset cruises and luxury cave hotels.</p>
+                    <span class="btn btn-primary" style="width: 100%; padding: 0.5rem; display: block; text-align: center;">View Itinerary</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section-padding fade-in-up">
+        <div class="section-header" style="text-align: left; margin-bottom: 2rem;">
+            <h2>Travel Inspiration</h2>
+            <p>Guides, tips, and stories from experts.</p>
+        </div>
+
+        <div class="grid-container">
+            <div class="travel-card blog-card">
+                <div class="card-img-wrapper">
+                    <img src="https://images.unsplash.com/photo-1452421822248-d4c2b47f0c81?auto=format&fit=crop&q=80&w=600" class="card-img" alt="Blog">
+                </div>
+                <div class="card-body">
+                    <span class="blog-tag">Budget Travel</span>
+                    <h3 class="blog-title">Top 10 Budget Destinations for Students in 2026</h3>
+                    <span class="blog-link" style="cursor: pointer;">Read Article <i class="fa-solid fa-arrow-right"></i></span>
+                </div>
+            </div>
+
+            <div class="travel-card blog-card">
+                <div class="card-img-wrapper">
+                    <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&q=80&w=600" class="card-img" alt="Blog">
+                </div>
+                <div class="card-body">
+                    <span class="blog-tag">Guides</span>
+                    <h3 class="blog-title">The Ultimate Guide to the Best Beaches in Asia</h3>
+                    <span class="blog-link" style="cursor: pointer;">Read Article <i class="fa-solid fa-arrow-right"></i></span>
+                </div>
+            </div>
+
+            <div class="travel-card blog-card">
+                <div class="card-img-wrapper">
+                    <img src="https://images.unsplash.com/photo-1501504905252-473c47e087f8?auto=format&fit=crop&q=80&w=600" class="card-img" alt="Blog">
+                </div>
+                <div class="card-body">
+                    <span class="blog-tag">Solo Travel</span>
+                    <h3 class="blog-title">How to Plan Your First Solo Backpacking Trip</h3>
+                    <span class="blog-link" style="cursor: pointer;">Read Article <i class="fa-solid fa-arrow-right"></i></span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="footer-grid">
+            <div class="footer-col brand-col">
+                <a href="index.html" class="logo" style="color: white; font-size: 1.5rem; font-weight: 700;"><i class="fa-solid fa-location-dot"></i> Traveloop</a>
+                <p style="color: #94a3b8; margin-top: 1rem;">Personalized Travel Planning Made Easy. Organize, budget, and explore with ease.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Quick Links</h4>
+                <a href="index.html">Home</a>
+                <a href="explore_trips.html">Explore</a>
+                <a href="login.html">Login</a>
+                <a href="signup.html">Sign Up</a>
+            </div>
+            <div class="footer-col">
+                <h4>Contact</h4>
+                <p style="color: #94a3b8;"><i class="fa-solid fa-envelope"></i> hello@traveloop.com</p>
+            </div>
+        </div>
+        <div class="footer-bottom" style="text-align: center; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 2rem; margin-top: 2rem; color: #94a3b8;">
+            <p>&copy; 2026 Traveloop. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <div class="login-modal" id="loginModal">
+        <div class="login-content" id="loginContent">
+            <i class="fa-solid fa-lock"></i>
+            <h3>Login Required</h3>
+            <p>For more exploration, please log in to your account.</p>
+            <div class="login-modal-buttons">
+                <button class="btn btn-secondary" onclick="closeLoginModal()">Cancel</button>
+                <a href="login.html" class="btn btn-primary">Login Now</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Check Login Status
+        function isLoggedIn() {
+            return localStorage.getItem('loggedIn') === 'true';
+        }
+
+        // --- NEW: DYNAMIC NAVBAR LOGIC ---
+        document.addEventListener('DOMContentLoaded', () => {
+            if (isLoggedIn()) {
+                const navLinks = document.getElementById('nav-links');
+                // Replace the default menu with the Standardized Application Menu
+                navLinks.innerHTML = `
+                    <a href="dashboard.html">Dashboard</a>
+                    <a href="my_trips.html">My Trips</a>
+                    <a href="explore_trips.html" class="active">Explore</a>
+                    <a href="budget.html">Budget</a>
+                    <a href="profile.html">Profile</a>
+                    <a href="#" onclick="logout()" class="nav-btn" style="background: #fee2e2; color: #ef4444; padding: 0.5rem 1.2rem; border-radius: 8px; margin-left: 10px; font-weight: 600;">Logout</a>
+                `;
+            }
+
+            // Also protect all the existing "Explore" buttons if logged out
+            const travelButtons = document.querySelectorAll('.travel-card .btn, .travel-card .blog-link');
+            travelButtons.forEach(button => {
+                button.addEventListener('click', (event) => {
+                    if (!isLoggedIn()) {
+                        event.preventDefault(); // Stop the button from going anywhere
+                        showLoginModal();       // Show the popup instead
+                    }
+                });
+            });
+        });
+
+        // Logout Functionality
+        function logout() {
+            localStorage.removeItem('loggedIn');
+            localStorage.removeItem('userEmail');
+            window.location.reload(); // Refresh the page to show the logged-out state
+        }
+
+        // Sticky Navbar Logic
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+                navbar.style.background = 'rgba(255, 255, 255, 0.95)';
+                navbar.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.05)';
+            } else {
+                navbar.classList.remove('scrolled');
+                navbar.style.background = 'transparent';
+                navbar.style.boxShadow = 'none';
+            }
+        });
+
+        // Mobile Hamburger Menu
+        const hamburger = document.getElementById('hamburger');
+        hamburger.addEventListener('click', () => {
+            document.getElementById('nav-links').classList.toggle('active');
+        });
+
+        // Login Modal Controls
+        function showLoginModal() {
+            const modal = document.getElementById('loginModal');
+            const content = document.getElementById('loginContent');
+            modal.style.display = 'flex';
+            void modal.offsetWidth; // Trigger reflow
+            modal.style.opacity = '1';
+            content.style.transform = 'scale(1)';
+        }
+
+        function closeLoginModal() {
+            const modal = document.getElementById('loginModal');
+            const content = document.getElementById('loginContent');
+            modal.style.opacity = '0';
+            content.style.transform = 'scale(0.8)';
+            setTimeout(() => { modal.style.display = 'none'; }, 300);
+        }
+
+        // Modified Search Logic
+        function searchTrips() {
+            if (!isLoggedIn()) {
+                showLoginModal();
+                return;
+            }
+            const value = document.getElementById("searchInput").value.toLowerCase();
+            if(value) {
+                document.getElementById('destinationsGrid').scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+
+        document.getElementById("searchInput").addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                searchTrips();
+            }
+        });
+
+        // Modified Filter Pills Logic
+        const filterPills = document.querySelectorAll('.filter-pill');
+        filterPills.forEach(pill => {
+            pill.addEventListener('click', () => {
+                if (!isLoggedIn()) {
+                    showLoginModal();
+                    return;
+                }
+                filterPills.forEach(p => p.classList.remove('active'));
+                pill.classList.add('active');
+            });
+        });
+
+        // Scroll Animations
+        const observerOptions = { threshold: 0.1, rootMargin: "0px 0px -50px 0px" };
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target); 
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.fade-in-up').forEach(el => observer.observe(el));
+    </script>
+</body>
+</html>

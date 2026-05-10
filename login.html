@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Traveloop</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="main.css">
+    <style>
+        /* --- Auth Pages Specific CSS --- */
+        body { overflow-x: hidden; overflow-y: auto; }
+        .auth-wrapper { display: flex; min-height: 100vh; width: 100%; }
+
+        /* Left Side (Sticky) */
+        .auth-left {
+            flex: 1; position: sticky; top: 0; height: 100vh;
+            background-image: url('https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=1200');
+            background-size: cover; background-position: center;
+            display: flex; flex-direction: column; justify-content: space-between;
+            padding: 3rem; color: var(--white);
+        }
+        .auth-overlay { position: absolute; inset: 0; background: linear-gradient(135deg, rgba(15, 23, 42, 0.85) 0%, rgba(37, 99, 235, 0.6) 100%); z-index: 1; }
+        .auth-left-content { position: relative; z-index: 2; }
+        .auth-logo { font-size: 2rem; font-weight: 700; color: var(--white); display: flex; align-items: center; gap: 0.5rem; margin-bottom: auto; }
+        .auth-quote { position: relative; z-index: 2; margin-top: auto; }
+        .auth-quote h1 { font-size: 3.5rem; line-height: 1.2; margin-bottom: 1rem; }
+        .auth-quote p { font-size: 1.2rem; opacity: 0.9; }
+
+        /* Right Side */
+        .auth-right {
+            flex: 1; display: flex; align-items: center; justify-content: center;
+            background-color: var(--bg-light); position: relative; padding: 2rem;
+        }
+        .auth-right::before {
+            content: ''; position: absolute; top: 10%; right: 10%; width: 300px; height: 300px;
+            background: radial-gradient(circle, rgba(37,99,235,0.15) 0%, rgba(255,255,255,0) 70%); border-radius: 50%;
+        }
+        .auth-card {
+            width: 100%; max-width: 450px; padding: 3rem 2.5rem; position: relative; z-index: 2;
+            background: rgba(255, 255, 255, 0.8); border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+        .auth-header { text-align: center; margin-bottom: 2rem; }
+        .auth-header h2 { font-size: 2rem; color: var(--dark-navy); margin-bottom: 0.5rem; }
+        .auth-header p { color: var(--text-gray); }
+
+        /* --- Floating Labels CSS --- */
+        .form-floating { position: relative; margin-bottom: 1.5rem; }
+        .form-floating .form-control {
+            width: 100%; padding: 1.25rem 1rem 0.5rem;
+            border: 1px solid #cbd5e1; border-radius: 8px;
+            font-family: inherit; font-size: 1rem;
+            background: rgba(255, 255, 255, 0.9); transition: var(--transition); height: 3.5rem;
+        }
+        .form-floating label {
+            position: absolute; top: 50%; left: 1rem; transform: translateY(-50%);
+            color: var(--text-gray); font-size: 1rem; pointer-events: none; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .form-floating .form-control:focus, .form-floating .form-control:not(:placeholder-shown) {
+            outline: none; border-color: var(--primary-blue); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+        .form-floating .form-control:focus ~ label, .form-floating .form-control:not(:placeholder-shown) ~ label {
+            top: 0.5rem; transform: translateY(0) scale(0.8); transform-origin: left top; color: var(--primary-blue);
+        }
+
+        /* Validation Colors & Shake */
+        .form-control.is-valid { border-color: #10b981; }
+        .form-control.is-valid:focus { box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1); }
+        .form-control.is-invalid { border-color: #ef4444; animation: shake 0.4s ease-in-out; }
+        .form-control.is-invalid:focus { box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1); }
+        .error-text { color: #ef4444; font-size: 0.8rem; margin-top: 0.4rem; display: none; }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-4px); }
+            40%, 80% { transform: translateX(4px); }
+        }
+
+        /* Password Toggle */
+        .password-toggle { position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-gray); cursor: pointer; z-index: 10; }
+        .password-toggle:hover { color: var(--dark-navy); }
+
+        /* UI Elements */
+        .form-options { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; font-size: 0.9rem; }
+        .checkbox-label { display: flex; align-items: center; gap: 0.5rem; cursor: pointer; color: var(--text-gray); }
+        .forgot-link { color: var(--primary-blue); font-weight: 500; }
+        .forgot-link:hover { text-decoration: underline; }
+        .btn-full { width: 100%; margin-bottom: 1rem; }
+        .btn-primary:disabled { background-color: #94a3b8; cursor: not-allowed; box-shadow: none; transform: none; }
+
+        .alert-error {
+            background-color: #fef2f2; color: #b91c1c; border: 1px solid #f87171; padding: 0.75rem 1rem;
+            border-radius: 8px; margin-bottom: 1.5rem; font-size: 0.9rem; display: none; align-items: center; gap: 0.5rem;
+        }
+
+        .divider { display: flex; align-items: center; text-align: center; margin: 1.5rem 0; color: var(--text-gray); font-size: 0.9rem; }
+        .divider::before, .divider::after { content: ''; flex: 1; border-bottom: 1px solid #cbd5e1; }
+        .divider:not(:empty)::before { margin-right: .5em; }
+        .divider:not(:empty)::after { margin-left: .5em; }
+        
+        .btn-google { background-color: white; color: var(--dark-navy); border: 1px solid #cbd5e1; display: flex; align-items: center; justify-content: center; gap: 0.75rem; }
+        .btn-google:hover { background-color: var(--bg-light); transform: translateY(-2px); }
+
+        .auth-footer { text-align: center; margin-top: 1.5rem; font-size: 0.95rem; color: var(--text-gray); }
+        .auth-footer a { color: var(--primary-blue); font-weight: 600; }
+        .auth-footer a:hover { text-decoration: underline; }
+        
+        .back-home { position: absolute; top: 2rem; right: 2rem; color: var(--text-gray); font-weight: 500; z-index: 10; }
+        .back-home:hover { color: var(--primary-blue); }
+
+        @media (max-width: 900px) {
+            .auth-wrapper { flex-direction: column; overflow-y: auto; }
+            .auth-left { display: none; }
+            .auth-right { min-height: 100vh; padding: 2rem 1rem; }
+            .back-home { top: 1rem; right: 1rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="auth-wrapper">
+        <div class="auth-left">
+            <div class="auth-overlay"></div>
+            <a href="index.html" class="auth-logo auth-left-content">
+                <i class="fa-solid fa-location-dot"></i> Traveloop
+            </a>
+            <div class="auth-quote">
+                <h1>Your next <br>adventure <br>starts here.</h1>
+                <p>Log in to access your itineraries, budgets, and saved destinations.</p>
+            </div>
+        </div>
+
+        <div class="auth-right">
+            <a href="index.html" class="back-home"><i class="fa-solid fa-arrow-left"></i> Home</a>
+            
+            <div class="auth-card glass-card">
+                <div class="auth-header">
+                    <h2>Welcome Back</h2>
+                    <p>Please enter your details to sign in.</p>
+                </div>
+
+                <div id="loginAlert" class="alert-error">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                    <span>Invalid email or password. Please try again.</span>
+                </div>
+
+                <form id="loginForm" novalidate>
+                    <div class="form-floating">
+                        <input type="email" id="email" class="form-control" placeholder=" " required>
+                        <label for="email">Email Address</label>
+                        <div class="error-text" id="emailError">Please enter a valid email address.</div>
+                    </div>
+
+                    <div class="form-floating" style="margin-bottom: 0.5rem;">
+                        <input type="password" id="password" class="form-control" placeholder=" " required>
+                        <label for="password">Password</label>
+                        <i class="fa-regular fa-eye password-toggle" id="togglePassword"></i>
+                    </div>
+
+                    <div class="form-options">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="remember"> Remember me
+                        </label>
+                        <a href="#" class="forgot-link">Forgot password?</a>
+                    </div>
+
+                    <button type="submit" id="loginBtn" class="btn btn-primary btn-full" disabled>Sign In</button>
+                    
+                    <div class="divider">or</div>
+                    
+                    <button type="button" class="btn btn-google btn-full">
+                        <i class="fa-brands fa-google" style="color: #ea4335;"></i> Sign in with Google
+                    </button>
+                </form>
+
+                <div class="auth-footer">
+                    Don't have an account? <a href="signup.html">Sign up</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const emailInput = document.getElementById('email');
+            const passwordInput = document.getElementById('password');
+            const togglePassword = document.getElementById('togglePassword');
+            const loginBtn = document.getElementById('loginBtn');
+            const loginForm = document.getElementById('loginForm');
+            const loginAlert = document.getElementById('loginAlert');
+            
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            
+            let isEmailValid = false;
+            let isPassValid = false;
+
+            // Toggle Password
+            togglePassword.addEventListener('click', function () {
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+                this.classList.toggle('fa-eye');
+                this.classList.toggle('fa-eye-slash');
+            });
+
+            // Email Validation
+            emailInput.addEventListener('input', () => {
+                const val = emailInput.value.trim();
+                const emailError = document.getElementById('emailError');
+                
+                isEmailValid = emailRegex.test(val);
+                
+                if(val === '') {
+                    emailInput.className = 'form-control';
+                    emailError.style.display = 'none';
+                } else if (isEmailValid) {
+                    emailInput.className = 'form-control is-valid';
+                    emailError.style.display = 'none';
+                } else {
+                    emailInput.className = 'form-control is-invalid';
+                    emailError.style.display = 'block';
+                }
+                checkForm();
+            });
+
+            // Password Validation (Simplified for Login)
+            passwordInput.addEventListener('input', () => {
+                const val = passwordInput.value;
+                
+                // For login, we just ensure they typed at least 8 characters before enabling the button
+                isPassValid = val.length >= 8; 
+                
+                if (val === '') {
+                    passwordInput.className = 'form-control';
+                } else if (isPassValid) {
+                    passwordInput.className = 'form-control is-valid';
+                } else {
+                    passwordInput.className = 'form-control is-invalid';
+                }
+
+                checkForm();
+            });
+
+            function checkForm() {
+                loginBtn.disabled = !(isEmailValid && isPassValid);
+            }
+
+            // Submit Form
+            loginForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                if (!isEmailValid || !isPassValid) return;
+
+                const email = emailInput.value.trim();
+
+                // Simulate "Wrong Credentials" feature
+                if (email.startsWith('test@')) {
+                    loginAlert.style.display = 'flex';
+                    const newAlert = loginAlert.cloneNode(true);
+                    loginAlert.parentNode.replaceChild(newAlert, loginAlert);
+                    passwordInput.value = '';
+                    passwordInput.dispatchEvent(new Event('input')); 
+                    return; 
+                }
+
+                loginAlert.style.display = 'none';
+                localStorage.setItem('loggedIn', 'true');
+                localStorage.setItem('userEmail', email);
+                
+                loginBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Logging in...';
+                loginBtn.disabled = true;
+                
+                setTimeout(() => {
+                    window.location.href = 'dashboard.html';
+                }, 800);
+            });
+        });
+    </script>
+</body>
+</html>

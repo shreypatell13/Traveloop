@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | Traveloop</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="main.css">
+    <style>
+        /* --- Dashboard Specific CSS --- */
+        body { background-color: #f1f5f9; } /* Slightly darker background to make glass pop */
+        
+        .dash-container { max-width: 1200px; margin: 0 auto; padding: 2rem; padding-top: 6rem; }
+
+        /* 1. Welcome Hero Section */
+        .dash-hero {
+            display: flex; justify-content: space-between; align-items: center;
+            background: linear-gradient(135deg, var(--dark-navy) 0%, var(--primary-blue) 100%);
+            border-radius: 24px; padding: 3rem; color: white; margin-bottom: 2rem;
+            position: relative; overflow: hidden; box-shadow: 0 20px 40px rgba(37,99,235,0.2);
+        }
+        .dash-hero::before {
+            content: ''; position: absolute; top: 0; right: 0; bottom: 0; left: 50%;
+            background-image: url('https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&q=80&w=800');
+            background-size: cover; background-position: center; opacity: 0.2;
+            mask-image: linear-gradient(to left, rgba(0,0,0,1), rgba(0,0,0,0));
+            -webkit-mask-image: linear-gradient(to left, rgba(0,0,0,1), rgba(0,0,0,0));
+        }
+        .hero-text { position: relative; z-index: 2; max-width: 500px; }
+        .hero-text h1 { font-size: 2.5rem; margin-bottom: 0.5rem; }
+        .hero-text p { font-size: 1.1rem; opacity: 0.9; margin-bottom: 1.5rem; }
+        .hero-buttons { display: flex; gap: 1rem; }
+        
+        .hero-visuals { position: relative; z-index: 2; display: flex; gap: 1rem; }
+        .floating-stat {
+            background: rgba(255,255,255,0.15); backdrop-filter: blur(10px);
+            padding: 1rem 1.5rem; border-radius: 16px; border: 1px solid rgba(255,255,255,0.2);
+            animation: float 4s ease-in-out infinite; display: flex; align-items: center; gap: 1rem;
+        }
+        .floating-stat i { font-size: 1.5rem; background: rgba(255,255,255,0.2); padding: 0.8rem; border-radius: 12px; }
+        .stat-delay-1 { animation-delay: 1s; transform: translateY(20px); }
+
+        /* 2. Quick Stats Grid */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; margin-bottom: 3rem; }
+        .stat-card {
+            background: white; padding: 1.5rem; border-radius: 16px; display: flex; align-items: center; gap: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05); transition: var(--transition); border: 1px solid white;
+        }
+        .stat-card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(37,99,235,0.1); border-color: rgba(37,99,235,0.2); }
+        .stat-icon { width: 60px; height: 60px; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
+        .icon-blue { background: #eff6ff; color: #2563eb; }
+        .icon-green { background: #ecfdf5; color: #10b981; }
+        .icon-purple { background: #faf5ff; color: #9333ea; }
+        .icon-orange { background: #fff7ed; color: #ea580c; }
+        .stat-info h4 { font-size: 1.5rem; color: var(--dark-navy); margin-bottom: 0.2rem; }
+        .stat-info p { font-size: 0.9rem; color: var(--text-gray); }
+
+        /* 3. Quick Actions */
+        .section-title { font-size: 1.5rem; color: var(--dark-navy); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem; }
+        .actions-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-bottom: 3rem; }
+        .action-btn {
+            background: white; border: none; padding: 1.5rem 1rem; border-radius: 16px;
+            display: flex; flex-direction: column; align-items: center; gap: 1rem;
+            color: var(--dark-navy); font-weight: 500; cursor: pointer; transition: var(--transition);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+        .action-btn i { font-size: 1.8rem; color: var(--primary-blue); transition: var(--transition); }
+        .action-btn:hover { background: var(--primary-blue); color: white; transform: translateY(-5px); box-shadow: 0 10px 25px rgba(37,99,235,0.3); }
+        .action-btn:hover i { color: white; transform: scale(1.1); }
+
+        /* 4. Recent Trips */
+        .trips-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-bottom: 4rem; }
+        .trip-card { background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); transition: var(--transition); }
+        .trip-card:hover { transform: translateY(-8px); box-shadow: 0 15px 30px rgba(0,0,0,0.1); }
+        .trip-img { height: 160px; width: 100%; object-fit: cover; }
+        .trip-details { padding: 1.5rem; }
+        .trip-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; }
+        .trip-head h3 { font-size: 1.2rem; color: var(--dark-navy); }
+        .trip-date { font-size: 0.8rem; color: var(--primary-blue); font-weight: 600; background: var(--primary-blue-light); padding: 0.3rem 0.6rem; border-radius: 20px; }
+        .trip-stats { display: flex; gap: 1rem; font-size: 0.85rem; color: var(--text-gray); margin-bottom: 1.5rem; }
+        .trip-stats span { display: flex; align-items: center; gap: 0.4rem; }
+        
+        /* Progress Bar */
+        .progress-container { margin-bottom: 1.5rem; }
+        .progress-labels { display: flex; justify-content: space-between; font-size: 0.8rem; font-weight: 600; color: var(--text-gray); margin-bottom: 0.5rem; }
+        .progress-bar { width: 100%; height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, #3b82f6, #10b981); border-radius: 4px; transition: width 1s ease-in-out; }
+
+        /* 5. Explore Destinations (Mirroring explore_trips UI) */
+        .explore-cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 4rem; }
+        .explore-card { position: relative; border-radius: 16px; overflow: hidden; height: 300px; cursor: pointer; }
+        .explore-card img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
+        .explore-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(15,23,42,0.9) 0%, rgba(15,23,42,0) 60%); }
+        .explore-content { position: absolute; bottom: 0; left: 0; width: 100%; padding: 1.5rem; color: white; transform: translateY(10px); transition: transform 0.3s ease; }
+        .explore-content h3 { font-size: 1.4rem; margin-bottom: 0.2rem; }
+        .explore-content .rating { color: #fbbf24; font-size: 0.9rem; margin-bottom: 0.5rem; display: block; }
+        .explore-btn { display: inline-block; padding: 0.4rem 1rem; border: 1px solid white; color: white; border-radius: 6px; font-size: 0.85rem; opacity: 0; transition: all 0.3s ease; margin-top: 0.5rem; }
+        .explore-card:hover img { transform: scale(1.1); }
+        .explore-card:hover .explore-content { transform: translateY(0); }
+        .explore-card:hover .explore-btn { opacity: 1; background: var(--primary-blue); border-color: var(--primary-blue); }
+
+        /* Layout Grid for Timeline & Budget */
+        .bottom-grid { display: grid; grid-template-columns: 1fr 1.5fr; gap: 2rem; margin-bottom: 4rem; }
+
+        /* 6. Upcoming Timeline */
+        .timeline-box { background: white; padding: 2rem; border-radius: 24px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .timeline { border-left: 2px dashed #cbd5e1; margin-left: 1rem; padding-left: 1.5rem; padding-top: 1rem; }
+        .time-item { position: relative; margin-bottom: 2rem; }
+        .time-item::before {
+            content: ''; position: absolute; left: -1.85rem; top: 0; width: 12px; height: 12px;
+            background: var(--primary-blue); border-radius: 50%; box-shadow: 0 0 0 4px #eff6ff;
+        }
+        .time-date { font-size: 0.85rem; font-weight: 600; color: var(--primary-blue); margin-bottom: 0.3rem; }
+        .time-title { font-size: 1.1rem; color: var(--dark-navy); font-weight: 600; margin-bottom: 0.3rem; }
+        .time-desc { font-size: 0.9rem; color: var(--text-gray); }
+
+        /* 7. Budget Overview */
+        .budget-box { background: white; padding: 2rem; border-radius: 24px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .budget-total-card {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color: white;
+            padding: 2rem; border-radius: 16px; margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center;
+        }
+        .budget-total-card h3 { font-size: 2rem; margin-top: 0.5rem; color: #10b981; }
+        .budget-warning { background: rgba(239, 68, 68, 0.2); color: #fca5a5; padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.85rem; display: flex; align-items: center; gap: 0.5rem; }
+        
+        .budget-items { display: flex; flex-direction: column; gap: 1.5rem; }
+        .budget-item-head { display: flex; justify-content: space-between; font-size: 0.9rem; font-weight: 500; margin-bottom: 0.5rem; }
+        .bg-blue { background: #3b82f6; } .bg-orange { background: #f97316; } .bg-purple { background: #a855f7; } .bg-red { background: #ef4444; }
+
+        /* Active Nav Highlight */
+        .nav-links a.active { color: var(--primary-blue); font-weight: 600; }
+        .nav-links a.active::after { content: ''; position: absolute; width: 100%; height: 2px; bottom: -4px; left: 0; background-color: var(--primary-blue); }
+
+        @media (max-width: 900px) {
+            .dash-hero { flex-direction: column; text-align: center; }
+            .hero-buttons { justify-content: center; }
+            .hero-visuals { display: none; }
+            .bottom-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo"><i class="fa-solid fa-location-dot"></i> Traveloop</a>
+            <div class="nav-links" id="nav-links">
+                <a href="dashboard.html" class="active">Dashboard</a>
+                <a href="my_trips.html">My Trips</a>
+                <a href="explore_trips.html">Explore</a>
+                <a href="budget.html">Budget</a>
+                <a href="profile.html">Profile</a>
+                <a href="#" onclick="logout()" class="nav-btn" style="background: #fee2e2; color: #ef4444;">Logout</a>
+            </div>
+            <div class="hamburger" id="hamburger"><i class="fa-solid fa-bars"></i></div>
+        </div>
+    </nav>
+
+    <div class="dash-container">
+        
+        <header class="dash-hero animate-on-scroll">
+            <div class="hero-text">
+                <div class="breadcrumb-container" style="justify-content: flex-start; margin-bottom: 1.5rem;">
+                    <a href="index.html">Home</a> 
+                    <span class="breadcrumb-separator"><i class="fa-solid fa-chevron-right" style="font-size: 0.7rem; opacity: 0.7;"></i></span>
+                    <span>Dashboard</span>
+                </div>
+
+                <h1>Welcome Back, <span id="username">Explorer</span> 👋</h1>
+                <p>Ready to plan your next unforgettable adventure? Your trips are waiting.</p>
+                
+                <div class="hero-buttons">
+                    <a href="create_trip.html" class="btn btn-secondary">
+                        <i class="fa-solid fa-plus"></i> Create New Trip
+                    </a>
+                    <a href="explore_trips.html" class="btn btn-primary" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.4);">
+                        <i class="fa-solid fa-globe"></i> Explore
+                    </a>
+                </div>
+            </div>
+
+            <div class="hero-visuals">
+                <div class="floating-stat">
+                    <i class="fa-solid fa-wallet" style="color: #4ade80;"></i>
+                    <div>
+                        <h4 style="margin:0; font-size: 1.1rem;" id="hero-budget-managed">₹0</h4>
+                        <span style="font-size: 0.8rem; opacity:0.8;">Budget Managed</span>
+                    </div>
+                </div>
+                <div class="floating-stat stat-delay-1">
+                    <i class="fa-solid fa-plane" style="color: #93c5fd;"></i>
+                    <div>
+                        <h4 style="margin:0; font-size: 1.1rem;" id="hero-upcoming-dest">None</h4>
+                        <span style="font-size: 0.8rem; opacity:0.8;">Next Destination</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <section class="stats-grid animate-on-scroll">
+            <div class="stat-card glass-card">
+                <div class="stat-icon icon-blue"><i class="fa-solid fa-suitcase-rolling"></i></div>
+                <div class="stat-info">
+                    <h4 class="counter" id="stat-trips-created" data-target="0">0</h4>
+                    <p>Trips Created</p>
+                </div>
+            </div>
+            <div class="stat-card glass-card">
+                <div class="stat-icon icon-green"><i class="fa-solid fa-earth-americas"></i></div>
+                <div class="stat-info">
+                    <h4 class="counter" id="stat-countries-planned" data-target="0">0</h4>
+                    <p>Destinations</p>
+                </div>
+            </div>
+            <div class="stat-card glass-card">
+                <div class="stat-icon icon-purple"><i class="fa-solid fa-indian-rupee-sign"></i></div>
+                <div class="stat-info">
+                    <h4 class="counter" id="stat-total-budget" data-target="0">0</h4>
+                    <p>Total Budget</p>
+                </div>
+            </div>
+            <div class="stat-card glass-card">
+                <div class="stat-icon icon-orange"><i class="fa-solid fa-calendar-check"></i></div>
+                <div class="stat-info">
+                    <h4 class="counter" id="stat-upcoming-trips" data-target="0">0</h4>
+                    <p>Upcoming Trips</p>
+                </div>
+            </div>
+        </section>
+
+        <h2 class="section-title animate-on-scroll"><i class="fa-solid fa-bolt"></i> Quick Actions</h2>
+        <section class="actions-grid animate-on-scroll">
+            <button class="action-btn" onclick="window.location.href='create_trip.html'"><i class="fa-solid fa-circle-plus"></i> Create Trip</button>
+            <button class="action-btn" onclick="window.location.href='packing.html'"><i class="fa-solid fa-clipboard-list"></i> Packing List</button>
+            <button class="action-btn" onclick="window.location.href='itinerary_view.html'"><i class="fa-solid fa-book-open"></i> Itinerary-view</button>
+            <button class="action-btn" onclick="window.location.href='budget.html'"><i class="fa-solid fa-calculator"></i> Budget Planner</button>
+            <button class="action-btn" onclick="window.location.href='explore_trips.html'"><i class="fa-solid fa-map-location-dot"></i> Explore Cities</button>
+        </section>
+
+        <h2 class="section-title animate-on-scroll"><i class="fa-solid fa-clock-rotate-left"></i> Active Projects</h2>
+        <section class="trips-grid" id="tripsContainer">
+            <div style="grid-column: 1/-1; text-align: center; padding: 3rem; background: white; border-radius: 16px; border: 2px dashed #cbd5e1;">
+                <p style="color: var(--text-gray);">No trips planned yet. Click "Create New Trip" to get started!</p>
+             </div>
+        </section>
+
+        <h2 class="section-title animate-on-scroll"><i class="fa-solid fa-fire"></i> Popular Destinations</h2>
+        <section class="explore-cards-grid animate-on-scroll">
+            <div class="explore-card" onclick="window.location.href='explore_trips.html'">
+                <img src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&q=80&w=600" alt="Paris">
+                <div class="explore-overlay"></div>
+                <div class="explore-content">
+                    <span class="rating"><i class="fa-solid fa-star"></i> 4.9 • France</span>
+                    <h3>Paris</h3>
+                    <span class="explore-btn">Explore Deals</span>
+                </div>
+            </div>
+            <div class="explore-card" onclick="window.location.href='explore_trips.html'">
+                <img src="https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&q=80&w=600" alt="Dubai">
+                <div class="explore-overlay"></div>
+                <div class="explore-content">
+                    <span class="rating"><i class="fa-solid fa-star"></i> 4.8 • UAE</span>
+                    <h3>Dubai</h3>
+                    <span class="explore-btn">Explore Deals</span>
+                </div>
+            </div>
+            <div class="explore-card" onclick="window.location.href='explore_trips.html'">
+                <img src="https://images.unsplash.com/photo-1530122037265-a5f1f91d3b99?auto=format&fit=crop&q=80&w=600" alt="Swiss">
+                <div class="explore-overlay"></div>
+                <div class="explore-content">
+                    <span class="rating"><i class="fa-solid fa-star"></i> 5.0 • Europe</span>
+                    <h3>Switzerland</h3>
+                    <span class="explore-btn">Explore Deals</span>
+                </div>
+            </div>
+        </section>
+
+        <div class="bottom-grid">
+            <div class="timeline-box animate-on-scroll">
+                <h2 class="section-title" style="margin-bottom: 0.5rem;"><i class="fa-solid fa-route"></i> Upcoming</h2>
+                <div class="timeline" id="timeline-container">
+                    </div>
+            </div>
+
+            <div class="budget-box animate-on-scroll">
+                <h2 class="section-title"><i class="fa-solid fa-chart-pie"></i> Trip Budget Overview</h2>
+                <div id="budget-summary-content">
+                    </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer" style="background: white; color: var(--dark-navy); border-top: 1px solid #e2e8f0; padding-top: 3rem;">
+        <div class="footer-grid">
+            <div class="footer-col brand-col">
+                <a href="index.html" class="logo" style="color: var(--primary-blue);"><i class="fa-solid fa-location-dot"></i> Traveloop</a>
+                <p style="color: var(--text-gray);">Organize, budget, and explore with ease.</p>
+            </div>
+            <div class="footer-col">
+                <h4 style="color: var(--dark-navy);">Quick Links</h4>
+                <a href="dashboard.html" style="color: var(--text-gray);">Dashboard</a>
+                <a href="explore_trips.html" style="color: var(--text-gray);">Explore</a>
+            </div>
+            <div class="footer-col">
+                <h4>Contact</h4>
+                <p style="color: var(--text-gray);"><i class="fa-solid fa-envelope"></i> hello@traveloop.com</p>
+            </div>
+        </div>
+        <div class="footer-bottom" style="border-top-color: #e2e8f0; color: var(--text-gray);">
+            <p>&copy; 2026 Traveloop. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // 1. CHECK LOGIN SECURITY
+            if(localStorage.getItem("loggedIn") !== "true"){
+               window.location.href = "login.html";
+            }
+
+            // 2. SET USERNAME
+            let userStr = localStorage.getItem("user");
+            if (userStr) {
+                let user = JSON.parse(userStr);
+                document.getElementById("username").innerText = user.name.split(' ')[0];
+            }
+
+            // 3. LOAD DATA & CALCULATE REAL STATS
+            let trips = JSON.parse(localStorage.getItem("trips")) || [];
+            
+            const totalTrips = trips.length;
+            const totalBudget = trips.reduce((acc, curr) => acc + (parseInt(curr.totalBudget) || 0), 0);
+            const upcomingCount = trips.filter(t => new Date(t.startDate) > new Date()).length;
+            const uniqueDests = [...new Set(trips.map(t => t.destination))].filter(d => d).length;
+
+            // Set targets for counters
+            document.getElementById('stat-trips-created').setAttribute('data-target', totalTrips);
+            document.getElementById('stat-countries-planned').setAttribute('data-target', uniqueDests);
+            document.getElementById('stat-total-budget').setAttribute('data-target', totalBudget);
+            document.getElementById('stat-upcoming-trips').setAttribute('data-target', upcomingCount);
+
+            // Update Hero Floating elements
+            document.getElementById('hero-budget-managed').innerText = '₹' + totalBudget.toLocaleString('en-IN');
+            if(trips.length > 0) {
+                const nextTrip = trips.sort((a,b) => new Date(a.startDate) - new Date(b.startDate))[0];
+                document.getElementById('hero-upcoming-dest').innerText = nextTrip.destination.split(',')[0];
+            }
+
+            // 4. POPULATE TRIPS GRID (UPDATED TO SHOW REAL PROGRESS)
+            const tripsContainer = document.getElementById('tripsContainer');
+            if(trips.length > 0) {
+                tripsContainer.innerHTML = trips.map(trip => {
+                    
+                    // 👇 THIS GRABS THE REAL PROGRESS 👇
+                    const progress = trip.progress || 40;
+                    
+                    return `
+                    <div class="trip-card animate-on-scroll">
+                        <img src="${trip.coverImage || 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=600'}" class="trip-img">
+                        <div class="trip-details">
+                            <div class="trip-head">
+                                <h3>${trip.name.toUpperCase()}</h3>
+                                <span class="trip-date">${new Date(trip.startDate).toLocaleDateString('en-GB', {day:'numeric', month:'short'})}</span>
+                            </div>
+                            <div class="trip-stats">
+                                <span><i class="fa-solid fa-wallet"></i> ₹${parseInt(trip.totalBudget).toLocaleString('en-IN')}</span>
+                                <span><i class="fa-solid fa-location-dot"></i> ${trip.destination.split(',')[0]}</span>
+                            </div>
+                            <div class="progress-container">
+                                <div class="progress-labels"><span>Planning</span><span>${progress}%</span></div>
+                                <div class="progress-bar"><div class="progress-fill" style="width: ${progress}%;"></div></div>
+                            </div>
+                            <a href="itinerary.html?id=${trip.id}" class="btn btn-outline" style="color: var(--primary-blue); border-color: var(--primary-blue); width: 100%;">View Details</a>
+                        </div>
+                    </div>
+                `}).join('');
+            }
+
+            // 5. POPULATE TIMELINE
+            const timelineContainer = document.getElementById('timeline-container');
+            if(trips.length > 0) {
+                timelineContainer.innerHTML = trips.slice(0, 3).map(trip => `
+                    <div class="time-item">
+                        <div class="time-date">${new Date(trip.startDate).toLocaleDateString('en-GB', {day:'numeric', month:'long', year:'numeric'})}</div>
+                        <div class="time-title">${trip.name} ✈️</div>
+                        <div class="time-desc">Destination: ${trip.destination}</div>
+                    </div>
+                `).join('');
+            } else {
+                timelineContainer.innerHTML = '<p style="color:var(--text-gray)">No upcoming events.</p>';
+            }
+
+            // 6. POPULATE BUDGET OVERVIEW
+            const budgetSummary = document.getElementById('budget-summary-content');
+            if(trips.length > 0) {
+                const latestTrip = trips[trips.length - 1];
+                budgetSummary.innerHTML = `
+                    <div class="budget-total-card">
+                        <div>
+                            <span style="color: #94a3b8; font-size: 0.9rem;">${latestTrip.name} Budget</span>
+                            <h3>₹${parseInt(latestTrip.totalBudget).toLocaleString('en-IN')}</h3>
+                        </div>
+                        <div class="budget-warning">
+                            <i class="fa-solid fa-circle-check"></i> Active
+                        </div>
+                    </div>
+                    <div class="budget-items">
+                        <div class="progress-container" style="margin: 0;">
+                            <div class="budget-item-head"><span>Allocated</span> <span>100%</span></div>
+                            <div class="progress-bar"><div class="progress-fill bg-blue" style="width: 100%;"></div></div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                budgetSummary.innerHTML = '<p style="color:var(--text-gray)">Create a trip to see budget breakdown.</p>';
+            }
+
+            // 7. NUMBER COUNTER ANIMATION
+            const counters = document.querySelectorAll('.counter');
+            const speed = 200;
+            
+            counters.forEach(counter => {
+                const updateCount = () => {
+                    const target = +counter.getAttribute('data-target');
+                    const count = +counter.innerText.replace(/[₹,]/g, '');
+                    const inc = target / speed;
+                    if (count < target) {
+                        const nextVal = Math.ceil(count + inc);
+                        counter.innerText = nextVal;
+                        setTimeout(updateCount, 15);
+                    } else {
+                        if(counter.id === 'stat-total-budget') {
+                            counter.innerText = '₹' + target.toLocaleString('en-IN');
+                        } else {
+                            counter.innerText = target;
+                        }
+                    }
+                };
+                
+                const observer = new IntersectionObserver((entries) => {
+                    if(entries[0].isIntersecting) updateCount();
+                }, { threshold: 0.5 });
+                observer.observe(counter);
+            });
+
+            // Sticky Navbar
+            const navbar = document.getElementById('navbar');
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 50) navbar.classList.add('scrolled');
+                else navbar.classList.remove('scrolled');
+            });
+
+            // Mobile Hamburger
+            document.getElementById('hamburger').addEventListener('click', () => {
+                document.getElementById('nav-links').classList.toggle('active');
+            });
+
+            // Scroll Animations
+            const scrollElements = document.querySelectorAll('.animate-on-scroll');
+            const scrollObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = 1;
+                        entry.target.style.transform = 'translateY(0)';
+                        scrollObserver.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            scrollElements.forEach(el => {
+                el.style.opacity = 0;
+                el.style.transform = 'translateY(30px)';
+                el.style.transition = 'all 0.8s ease-out';
+                scrollObserver.observe(el);
+            });
+        });
+
+        // 8. LOGOUT FUNCTION
+        function logout(){
+           localStorage.removeItem("loggedIn");
+           localStorage.removeItem("userEmail");
+           window.location.href = "login.html";
+        }
+    </script>
+</body>
+</html>

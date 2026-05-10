@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Budget Planner | Traveloop</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="main.css">
+    <style>
+        body { background-color: #f8fafc; }
+
+        .budget-hero {
+            padding: 8rem 2rem 5rem;
+            background: linear-gradient(135deg, var(--dark-navy) 0%, #1e3a8a 100%);
+            color: white; text-align: center; position: relative; overflow: hidden;
+        }
+        .budget-hero::before {
+            content: ''; position: absolute; inset: 0;
+            background-image: url('https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&q=80&w=1920');
+            background-size: cover; background-position: center; opacity: 0.1;
+        }
+        .hero-content { position: relative; z-index: 2; max-width: 900px; margin: 0 auto; }
+        .hero-content h1 { font-size: 3rem; margin-bottom: 0.5rem; text-shadow: 0 4px 15px rgba(0,0,0,0.3); color: white !important;}
+        .hero-content p { font-size: 1.1rem; opacity: 0.9; margin-bottom: 2rem; color: white !important;}
+
+        .trip-selector {
+            background: rgba(255,255,255,0.1); backdrop-filter: blur(10px);
+            padding: 0.5rem 1rem; border-radius: 50px; border: 1px solid rgba(255,255,255,0.3);
+            color: white; font-family: inherit; font-size: 1rem; outline: none; cursor: pointer;
+        }
+        .trip-selector option { color: var(--dark-navy); background: white; }
+
+        .budget-container { max-width: 1200px; margin: -3rem auto 5rem; padding: 0 2rem; position: relative; z-index: 10; }
+
+        /* Top Summary Cards */
+        .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+        .summary-card {
+            background: white; border-radius: 24px; padding: 2rem; box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            border: 1px solid rgba(255,255,255,0.5); position: relative; overflow: hidden;
+        }
+        .summary-card::before { content: ''; position: absolute; top: 0; left: 0; width: 5px; height: 100%; }
+        .card-total::before { background: var(--primary-blue); }
+        .card-spent::before { background: #ef4444; }
+        .card-left::before { background: #10b981; }
+        
+        .summary-card p { color: var(--text-gray); font-size: 0.9rem; text-transform: uppercase; font-weight: 600; margin-bottom: 0.5rem; }
+        .summary-card h2 { font-size: 2.2rem; color: var(--dark-navy); margin: 0; }
+        .summary-card .icon-bg { position: absolute; right: 1rem; bottom: -1rem; font-size: 6rem; opacity: 0.05; }
+
+        .dashboard-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem; }
+        .section-box { background: white; border-radius: 24px; padding: 2rem; box-shadow: 0 10px 30px rgba(0,0,0,0.03); border: 1px solid #f1f5f9; }
+        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+        .section-header h3 { font-size: 1.3rem; color: var(--dark-navy); margin: 0; display: flex; align-items: center; gap: 10px; }
+
+        /* Category Progress Bars */
+        .cat-list { display: flex; flex-direction: column; gap: 1.2rem; }
+        .cat-item-header { display: flex; justify-content: space-between; font-size: 0.9rem; font-weight: 600; margin-bottom: 0.4rem; color: var(--dark-navy); }
+        .cat-track { height: 10px; background: #f1f5f9; border-radius: 10px; overflow: hidden; }
+        .cat-fill { height: 100%; border-radius: 10px; transition: 1s ease; }
+
+        /* Add Expense Form */
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+        .input-group { display: flex; flex-direction: column; gap: 0.5rem; }
+        .input-group label { font-size: 0.85rem; font-weight: 600; color: var(--text-gray); }
+        .expense-input { padding: 0.9rem 1.2rem; border: 1px solid #e2e8f0; border-radius: 12px; font-family: inherit; font-size: 0.95rem; background: #f8fafc; transition: 0.3s; }
+        .expense-input:focus { outline: none; border-color: var(--primary-blue); background: white; box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+        .btn-submit { width: 100%; padding: 1rem; border-radius: 12px; border: none; background: var(--primary-blue); color: white; font-weight: 600; cursor: pointer; transition: 0.3s; font-size: 1rem; }
+        .btn-submit:hover { background: var(--dark-navy); transform: translateY(-2px); box-shadow: 0 10px 20px rgba(37,99,235,0.2); }
+
+        /* Recent Transactions */
+        .expense-list { display: flex; flex-direction: column; gap: 1rem; max-height: 400px; overflow-y: auto; padding-right: 5px; }
+        .expense-list::-webkit-scrollbar { width: 6px; }
+        .expense-list::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        
+        .expense-card { display: flex; align-items: center; justify-content: space-between; padding: 1rem; background: #f8fafc; border-radius: 16px; border: 1px solid #f1f5f9; transition: 0.3s; }
+        .expense-card:hover { transform: translateX(5px); background: white; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        .ex-left { display: flex; align-items: center; gap: 1rem; }
+        .ex-icon { width: 45px; height: 45px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; color: white; }
+        .ex-details h5 { margin: 0; font-size: 1rem; color: var(--dark-navy); }
+        .ex-details p { margin: 0; font-size: 0.8rem; color: var(--text-gray); }
+        .ex-right { text-align: right; }
+        .ex-amount { font-weight: 700; color: #ef4444; font-size: 1.1rem; }
+        
+        .btn-del-ex { background: none; border: none; color: #cbd5e1; cursor: pointer; transition: 0.3s; padding: 5px; }
+        .btn-del-ex:hover { color: #ef4444; }
+        .btn-link-ex { background: none; border: none; color: var(--primary-blue); cursor: pointer; padding: 5px; font-size: 0.8rem;}
+
+        .auto-tag { font-size: 0.65rem; background: #eff6ff; color: var(--primary-blue); padding: 0.2rem 0.5rem; border-radius: 50px; font-weight: 600; margin-left: 5px; vertical-align: middle;}
+
+        @media (max-width: 900px) { .dashboard-layout { grid-template-columns: 1fr; } .form-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo"><i class="fa-solid fa-location-dot"></i> Traveloop</a>
+            <div class="nav-links" id="nav-links"></div>
+            <div class="hamburger" id="hamburger"><i class="fa-solid fa-bars"></i></div>
+        </div>
+    </nav>
+
+    <header class="budget-hero">
+        <div class="hero-content">
+            <h1>Travel Budget Planner 💰</h1>
+            <p>Track your expenses, analyze spending, and see the cost of your planned activities.</p>
+            
+            <div style="display: flex; justify-content: center; align-items: center; gap: 10px;">
+                <label for="tripSelect" style="font-weight: 600;">Select Trip:</label>
+                <select id="tripSelect" class="trip-selector" onchange="loadTripData()"></select>
+            </div>
+        </div>
+    </header>
+
+    <main class="budget-container">
+        <div class="summary-grid">
+            <div class="summary-card card-total">
+                <i class="fa-solid fa-vault icon-bg"></i>
+                <p>Total Budget</p>
+                <h2 id="disp-total">₹0</h2>
+            </div>
+            <div class="summary-card card-spent">
+                <i class="fa-solid fa-money-bill-transfer icon-bg"></i>
+                <p>Total Spent</p>
+                <h2 id="disp-spent">₹0</h2>
+            </div>
+            <div class="summary-card card-left">
+                <i class="fa-solid fa-piggy-bank icon-bg"></i>
+                <p>Remaining</p>
+                <h2 id="disp-left">₹0</h2>
+            </div>
+        </div>
+
+        <div class="dashboard-layout">
+            <div style="display: flex; flex-direction: column; gap: 2rem;">
+                <div class="section-box">
+                    <div class="section-header">
+                        <h3><i class="fa-solid fa-plus-circle" style="color:var(--primary-blue)"></i> Manual Expense</h3>
+                    </div>
+                    <div class="form-grid">
+                        <div class="input-group">
+                            <label>What did you pay for?</label>
+                            <input type="text" id="exName" class="expense-input" placeholder="e.g. Airport Coffee">
+                        </div>
+                        <div class="input-group">
+                            <label>Amount (₹)</label>
+                            <input type="number" id="exAmount" class="expense-input" placeholder="0">
+                        </div>
+                    </div>
+                    <div class="form-grid">
+                        <div class="input-group">
+                            <label>Category</label>
+                            <select id="exCat" class="expense-input">
+                                <option value="Hotels">Hotels 🏨</option>
+                                <option value="Flights">Flights/Transport ✈️</option>
+                                <option value="Food">Food & Drinks 🍕</option>
+                                <option value="Activities">Activities 🏄</option>
+                                <option value="Shopping">Shopping 🛍️</option>
+                                <option value="Other">Other 📝</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>Date</label>
+                            <input type="date" id="exDate" class="expense-input">
+                        </div>
+                    </div>
+                    <button class="btn-submit" onclick="addExpense()">Save Expense</button>
+                    <p style="text-align: center; font-size: 0.8rem; color: var(--text-gray); margin-top: 10px;">
+                        *Activities planned in your Itinerary are imported automatically.
+                    </p>
+                </div>
+
+                <div class="section-box">
+                    <div class="section-header">
+                        <h3><i class="fa-solid fa-chart-pie" style="color:var(--primary-blue)"></i> Spending by Category</h3>
+                    </div>
+                    <div class="cat-list" id="categoryBreakdown"></div>
+                </div>
+            </div>
+
+            <div class="section-box" style="display: flex; flex-direction: column;">
+                <div class="section-header">
+                    <h3><i class="fa-solid fa-receipt" style="color:var(--primary-blue)"></i> All Transactions</h3>
+                    <button class="btn" style="padding: 0.4rem 1rem; border-radius: 8px; font-size: 0.8rem; border: 1px solid var(--primary-blue); color: var(--primary-blue); background: transparent;" onclick="exportCSV()">
+                        <i class="fa-solid fa-download"></i> CSV
+                    </button>
+                </div>
+                <div class="expense-list" id="expenseList"></div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let allTrips = [];
+        let activeTrip = null;
+        let manualExpenses = []; 
+        let combinedExpenses = []; // Holds BOTH manual expenses and imported activities
+
+        // Mapped to match Itinerary categories as well
+        const catColors = {
+            'Hotels': '#3b82f6', 'Hotel': '#3b82f6',
+            'Flights': '#a855f7', 'Flight': '#a855f7',
+            'Food': '#f59e0b', 
+            'Activities': '#ef4444', 'Sightseeing': '#ef4444', 'Adventure': '#ef4444',
+            'Shopping': '#10b981', 'Other': '#64748b'
+        };
+        const catIcons = {
+            'Hotels': 'fa-bed', 'Hotel': 'fa-bed',
+            'Flights': 'fa-plane', 'Flight': 'fa-plane',
+            'Food': 'fa-utensils', 
+            'Activities': 'fa-person-hiking', 'Sightseeing': 'fa-camera', 'Adventure': 'fa-person-hiking',
+            'Shopping': 'fa-bag-shopping', 'Other': 'fa-receipt'
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if(localStorage.getItem("loggedIn") !== "true") window.location.href = "login.html";
+            
+            // Standardized Navbar Injection
+            document.getElementById('nav-links').innerHTML = `
+                <a href="dashboard.html">Dashboard</a>
+                <a href="my_trips.html">My Trips</a>
+                <a href="explore_trips.html">Explore</a>
+                <a href="budget.html">Budget</a>
+                <a href="profile.html">Profile</a>
+                <a href="#" onclick="logout()" class="nav-btn" style="background: #fee2e2; color: #ef4444; padding: 0.5rem 1.2rem; border-radius: 8px; margin-left: 10px; font-weight: 600;">Logout</a>
+            `;
+
+            document.getElementById('exDate').valueAsDate = new Date();
+
+            allTrips = JSON.parse(localStorage.getItem("trips")) || [];
+            if(allTrips.length === 0) {
+                alert("Please create a trip first to manage its budget!");
+                window.location.href = "create-trip.html";
+                return;
+            }
+
+            const select = document.getElementById('tripSelect');
+            select.innerHTML = allTrips.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
+            
+            loadTripData();
+
+            window.addEventListener('scroll', () => {
+                const nav = document.getElementById('navbar');
+                if (window.scrollY > 50) nav.classList.add('scrolled');
+                else nav.classList.remove('scrolled');
+            });
+        });
+
+        function loadTripData() {
+            const tripId = document.getElementById('tripSelect').value;
+            activeTrip = allTrips.find(t => t.id === tripId);
+            
+            // 1. Get Manual Expenses
+            manualExpenses = activeTrip.expenses || [];
+            
+            // 2. MAGIC: Automatically import activities that have a cost!
+            const tripStart = new Date(activeTrip.startDate);
+            let importedActivities = (activeTrip.activities || []).filter(a => a.cost > 0).map(act => {
+                let actDate = new Date(tripStart);
+                actDate.setDate(actDate.getDate() + (act.day - 1)); // Calculate exact date
+                return {
+                    id: act.id,
+                    name: act.name,
+                    amount: act.cost,
+                    cat: act.cat,
+                    date: actDate.toISOString().split('T')[0],
+                    isAuto: true // Marks it as an imported item
+                };
+            });
+
+            // 3. Combine them and sort by newest first
+            combinedExpenses = [...manualExpenses, ...importedActivities];
+            combinedExpenses.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            updateUI();
+        }
+
+        function addExpense() {
+            const name = document.getElementById('exName').value;
+            const amount = parseInt(document.getElementById('exAmount').value);
+            const cat = document.getElementById('exCat').value;
+            const date = document.getElementById('exDate').value;
+
+            if(!name || !amount) return alert("Please fill name and amount!");
+
+            // Add to manual array
+            manualExpenses.unshift({ id: Date.now(), name, amount, cat, date, isAuto: false }); 
+            saveData();
+            
+            document.getElementById('exName').value = "";
+            document.getElementById('exAmount').value = "";
+        }
+
+        function deleteExpense(id) {
+            if(confirm("Delete this manual expense?")) {
+                manualExpenses = manualExpenses.filter(e => e.id !== id);
+                saveData();
+            }
+        }
+
+        function saveData() {
+            activeTrip.expenses = manualExpenses; // Only save manual ones!
+            const index = allTrips.findIndex(t => t.id === activeTrip.id);
+            allTrips[index] = activeTrip;
+            localStorage.setItem("trips", JSON.stringify(allTrips));
+            loadTripData(); // Reloads combined list
+        }
+
+        function updateUI() {
+            const totalBudget = parseInt(activeTrip.totalBudget) || 0;
+            const spent = combinedExpenses.reduce((sum, e) => sum + e.amount, 0);
+            const left = totalBudget - spent;
+
+            // 1. Update Cards
+            document.getElementById('disp-total').innerText = "₹" + totalBudget.toLocaleString('en-IN');
+            document.getElementById('disp-spent').innerText = "₹" + spent.toLocaleString('en-IN');
+            document.getElementById('disp-left').innerText = "₹" + left.toLocaleString('en-IN');
+            document.getElementById('disp-left').style.color = left < 0 ? '#ef4444' : 'var(--dark-navy)';
+
+            // 2. Update Transactions List
+            const list = document.getElementById('expenseList');
+            if(combinedExpenses.length === 0) {
+                list.innerHTML = `<div style="text-align:center; padding: 2rem; color: #94a3b8;">No expenses recorded yet.</div>`;
+            } else {
+                list.innerHTML = combinedExpenses.map(ex => `
+                    <div class="expense-card">
+                        <div class="ex-left">
+                            <div class="ex-icon" style="background: ${catColors[ex.cat] || '#64748b'}"><i class="fa-solid ${catIcons[ex.cat] || 'fa-receipt'}"></i></div>
+                            <div class="ex-details">
+                                <h5>${ex.name} ${ex.isAuto ? '<span class="auto-tag">Planned</span>' : ''}</h5>
+                                <p>${new Date(ex.date).toLocaleDateString('en-GB', {day:'numeric', month:'short'})} • ${ex.cat}</p>
+                            </div>
+                        </div>
+                        <div class="ex-right">
+                            <div class="ex-amount">-₹${ex.amount.toLocaleString('en-IN')}</div>
+                            ${ex.isAuto ? 
+                                `<a href="itinerary.html?id=${activeTrip.id}" class="btn-link-ex" title="Edit in Itinerary Builder"><i class="fa-solid fa-link"></i></a>` : 
+                                `<button class="btn-del-ex" onclick="deleteExpense(${ex.id})"><i class="fa-solid fa-trash-can"></i></button>`
+                            }
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            // 3. Update Category Progress
+            const catContainer = document.getElementById('categoryBreakdown');
+            const catTotals = { 'Hotels':0, 'Flights':0, 'Food':0, 'Activities':0, 'Shopping':0, 'Other':0 };
+            
+            // Map itinerary categories to budget categories
+            combinedExpenses.forEach(e => {
+                let mapped = e.cat;
+                if(mapped === 'Hotel') mapped = 'Hotels';
+                if(mapped === 'Flight') mapped = 'Flights';
+                if(mapped === 'Sightseeing' || mapped === 'Adventure') mapped = 'Activities';
+                if(!catTotals[mapped]) catTotals['Other'] += e.amount;
+                else catTotals[mapped] += e.amount;
+            });
+
+            catContainer.innerHTML = Object.keys(catTotals).map(cat => {
+                if(catTotals[cat] === 0) return '';
+                const pct = totalBudget > 0 ? Math.min((catTotals[cat] / totalBudget) * 100, 100) : 0;
+                return `
+                <div style="margin-bottom: 1rem;">
+                    <div class="cat-item-header">
+                        <span><i class="fa-solid ${catIcons[cat]}" style="color:${catColors[cat]}; width:20px;"></i> ${cat}</span>
+                        <span>₹${catTotals[cat].toLocaleString('en-IN')}</span>
+                    </div>
+                    <div class="cat-track"><div class="cat-fill" style="background: ${catColors[cat]}; width: ${pct}%"></div></div>
+                </div>`;
+            }).join('');
+            
+            if(catContainer.innerHTML === '') catContainer.innerHTML = `<p style="color:var(--text-gray); font-size:0.9rem;">Add expenses to see breakdown.</p>`;
+        }
+
+        function exportCSV() {
+            if(combinedExpenses.length === 0) return alert("No expenses to export!");
+            let csv = "Date,Item,Category,Amount(INR),Type\n";
+            combinedExpenses.forEach(e => {
+                csv += `${e.date},${e.name},${e.cat},${e.amount},${e.isAuto ? 'Planned' : 'Manual'}\n`;
+            });
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.setAttribute('href', url);
+            a.setAttribute('download', `${activeTrip.name}_Budget.csv`);
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+
+        function logout() { localStorage.removeItem('loggedIn'); window.location.href = "login.html"; }
+    </script>
+</body>
+</html>

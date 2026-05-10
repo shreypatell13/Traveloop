@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Traveloop – Plan Your World</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;1,300;1,600&family=Outfit:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; overflow: hidden; background: #000; font-family: 'Outfit', sans-serif; }
+
+.bg-slider { position: fixed; inset: 0; z-index: 0; }
+
+.slide {
+  position: absolute; inset: 0; opacity: 0;
+  transition: opacity 1.8s ease-in-out;
+  background-size: cover; background-position: center;
+  transform: scale(1.08);
+}
+.slide.active {
+  opacity: 1;
+  animation: zoomDrift 9s ease-out forwards;
+}
+@keyframes zoomDrift {
+  from { transform: scale(1.08); }
+  to   { transform: scale(1.00); }
+}
+
+.slide-1 { background-image: url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&q=80&auto=format&fit=crop'); }
+.slide-2 { background-image: url('https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=1920&q=80&auto=format&fit=crop'); }
+.slide-3 { background-image: url('https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?w=1920&q=80&auto=format&fit=crop'); }
+.slide-4 { background-image: url('https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=1920&q=80&auto=format&fit=crop'); }
+.slide-5 { background-image: url('https://images.unsplash.com/photo-1540202404-a2f29016b523?w=1920&q=80&auto=format&fit=crop'); }
+.slide-6 { background-image: url('https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=1920&q=80&auto=format&fit=crop'); }
+
+.bg-overlay {
+  position: fixed; inset: 0; z-index: 1;
+  background: linear-gradient(110deg, rgba(0,0,0,0.78) 0%, rgba(0,0,0,0.35) 55%, rgba(0,0,0,0.15) 100%);
+}
+.vignette {
+  position: fixed; inset: 0; z-index: 2; pointer-events: none;
+  background: radial-gradient(ellipse at center, transparent 38%, rgba(0,0,0,0.6) 100%);
+}
+
+.page { position: relative; z-index: 10; height: 100vh; display: flex; align-items: stretch; }
+
+/* ── LEFT ── */
+.brand-side {
+  flex: 1; display: flex; flex-direction: column;
+  justify-content: space-between; padding: 2.4rem 3rem;
+  pointer-events: none;
+}
+
+.logo { display: flex; align-items: center; gap: 0.7rem; animation: fadeUp 0.8s ease both; }
+.logo-name {
+  font-family: 'Cormorant Garamond', serif; font-size: 1.65rem; font-weight: 600;
+  color: #fff; letter-spacing: 0.05em;
+}
+
+.dest-meta { animation: fadeUp 1s ease 0.15s both; }
+
+.dest-pill {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  background: rgba(255,255,255,0.1); backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.18); border-radius: 999px;
+  padding: 0.38rem 1rem; color: rgba(255,255,255,0.88);
+  font-size: 0.68rem; letter-spacing: 0.14em; text-transform: uppercase;
+  margin-bottom: 1.1rem;
+}
+.dest-pill .dot {
+  width: 6px; height: 6px; border-radius: 50%; background: #F97316;
+  animation: blink 2s infinite;
+}
+@keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+
+.hero-headline {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(2.6rem, 4.5vw, 4.2rem);
+  font-weight: 300; font-style: italic;
+  color: #fff; line-height: 1.12; letter-spacing: -0.01em;
+  text-shadow: 0 3px 20px rgba(0,0,0,0.5);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.hero-headline em { font-style: normal; font-weight: 600; color: #FDE68A; }
+
+.slide-dots { display: flex; gap: 0.45rem; margin-top: 1.8rem; pointer-events: all; }
+.sdot {
+  width: 22px; height: 3px; border-radius: 2px;
+  background: rgba(255,255,255,0.28); cursor: pointer;
+  transition: all 0.4s ease; position: relative; overflow: hidden;
+}
+.sdot.active { width: 46px; background: rgba(255,255,255,0.45); }
+.sdot.active::after {
+  content: ''; position: absolute; top: 0; left: 0; bottom: 0;
+  background: #fff; border-radius: 2px;
+  animation: dotFill 7s linear forwards;
+}
+@keyframes dotFill { from{width:0%} to{width:100%} }
+
+.stats-row { display: flex; gap: 2.4rem; animation: fadeUp 1s ease 0.3s both; }
+.stat .val { font-family: 'Cormorant Garamond', serif; font-size: 2rem; font-weight: 600; color: #fff; line-height: 1; }
+.stat .lbl { font-size: 0.62rem; letter-spacing: 0.15em; text-transform: uppercase; color: rgba(255,255,255,0.45); margin-top: 0.22rem; }
+
+/* ── FORM SIDE ── */
+.form-side {
+  width: 415px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  padding: 1.8rem 1.4rem;
+}
+
+.glass-card {
+  width: 100%;
+  background: rgba(6, 6, 10, 0.75);
+  backdrop-filter: blur(30px) saturate(1.5);
+  -webkit-backdrop-filter: blur(30px) saturate(1.5);
+  border: 1px solid rgba(255,255,255,0.09);
+  border-radius: 22px; padding: 2.2rem 2rem;
+  animation: slideIn 0.9s cubic-bezier(0.22,1,0.36,1) 0.05s both;
+}
+@keyframes slideIn { from{opacity:0;transform:translateX(36px)} to{opacity:1;transform:translateX(0)} }
+@keyframes fadeUp  { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
+
+.tabs {
+  display: flex; background: rgba(255,255,255,0.06);
+  border-radius: 11px; padding: 3px; margin-bottom: 1.8rem; gap: 3px;
+}
+.tab {
+  flex: 1; padding: 0.52rem; border: none; border-radius: 8px;
+  background: transparent; color: rgba(255,255,255,0.4);
+  font-family: 'Outfit', sans-serif; font-size: 0.8rem; font-weight: 500;
+  cursor: pointer; transition: all 0.22s ease;
+}
+.tab.active { background: rgba(255,255,255,0.11); color: #fff; }
+
+.eyebrow { font-size: 0.63rem; letter-spacing: 0.18em; text-transform: uppercase; color: #F97316; margin-bottom: 0.35rem; font-weight: 500; }
+.card-title { font-family: 'Cormorant Garamond', serif; font-size: 1.75rem; font-weight: 600; color: #fff; line-height: 1.2; margin-bottom: 0.35rem; }
+.card-sub { font-size: 0.78rem; color: rgba(255,255,255,0.4); line-height: 1.6; margin-bottom: 1.6rem; }
+
+.field { margin-bottom: 0.95rem; }
+.field label { display: block; font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.45); margin-bottom: 0.38rem; font-weight: 500; }
+.inp-wrap { position: relative; }
+.inp-wrap .ico { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); width: 14px; height: 14px; color: rgba(255,255,255,0.28); pointer-events: none; transition: color 0.2s; }
+.inp-wrap:focus-within .ico { color: #F97316; }
+.field input {
+  width: 100%; background: rgba(255,255,255,0.065); border: 1px solid rgba(255,255,255,0.09);
+  border-radius: 11px; padding: 0.78rem 1rem 0.78rem 2.5rem;
+  color: #fff; font-family: 'Outfit', sans-serif; font-size: 0.86rem; outline: none;
+  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+}
+.field input::placeholder { color: rgba(255,255,255,0.2); }
+.field input:focus { border-color: rgba(249,115,22,0.55); background: rgba(255,255,255,0.095); box-shadow: 0 0 0 3px rgba(249,115,22,0.1); }
+
+.eye-btn { position: absolute; right: 11px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: rgba(255,255,255,0.28); padding: 3px; line-height: 0; transition: color 0.2s; }
+.eye-btn:hover { color: rgba(255,255,255,0.65); }
+
+.forgot { display: block; text-align: right; font-size: 0.71rem; color: rgba(255,255,255,0.36); text-decoration: none; margin-top: 0.3rem; transition: color 0.2s; }
+.forgot:hover { color: #F97316; }
+
+.btn-cta {
+  width: 100%; margin-top: 1.1rem; padding: 0.88rem 1.4rem;
+  border: none; border-radius: 13px;
+  background: linear-gradient(135deg, #F97316 0%, #C2410C 100%);
+  color: #fff; font-family: 'Outfit', sans-serif; font-size: 0.88rem; font-weight: 500;
+  cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.55rem;
+  transition: transform 0.15s, box-shadow 0.2s, filter 0.2s;
+  box-shadow: 0 6px 22px rgba(249,115,22,0.4); letter-spacing: 0.02em;
+}
+.btn-cta:hover { transform: translateY(-1px); box-shadow: 0 10px 30px rgba(249,115,22,0.52); filter: brightness(1.07); }
+.btn-cta:active { transform: scale(0.98); }
+
+.divider { display: flex; align-items: center; gap: 0.75rem; margin: 1.2rem 0; color: rgba(255,255,255,0.18); font-size: 0.7rem; }
+.divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.08); }
+
+.social-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.55rem; }
+.btn-social {
+  padding: 0.62rem; border: 1px solid rgba(255,255,255,0.09); border-radius: 10px;
+  background: rgba(255,255,255,0.045); color: rgba(255,255,255,0.7);
+  font-family: 'Outfit', sans-serif; font-size: 0.78rem; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 0.45rem;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+}
+.btn-social:hover { background: rgba(255,255,255,0.09); border-color: rgba(255,255,255,0.2); color: #fff; }
+
+.switch-txt { text-align: center; font-size: 0.76rem; color: rgba(255,255,255,0.32); margin-top: 1.4rem; }
+.switch-txt a { color: #F97316; text-decoration: none; font-weight: 500; }
+.switch-txt a:hover { text-decoration: underline; }
+
+.auth-form { display: none; }
+.auth-form.active { display: block; }
+
+/* location strip bottom left */
+.loc-strip {
+  position: fixed; bottom: 1.8rem; left: 2.4rem; z-index: 20;
+  display: flex; align-items: center; gap: 0.6rem;
+  animation: fadeUp 1s ease 0.5s both; pointer-events: none;
+}
+.loc-dot { width: 7px; height: 7px; border-radius: 50%; background: #F97316; box-shadow: 0 0 0 4px rgba(249,115,22,0.22); }
+.loc-text { font-size: 0.71rem; letter-spacing: 0.08em; color: rgba(255,255,255,0.5); }
+.loc-name { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 0.95rem; color: rgba(255,255,255,0.88); margin-left: 0.2rem; }
+</style>
+</head>
+<body>
+
+<div class="bg-slider">
+  <div class="slide slide-1 active"></div>
+  <div class="slide slide-2"></div>
+  <div class="slide slide-3"></div>
+  <div class="slide slide-4"></div>
+  <div class="slide slide-5"></div>
+  <div class="slide slide-6"></div>
+</div>
+<div class="bg-overlay"></div>
+<div class="vignette"></div>
+
+<div class="page">
+
+  <!-- LEFT -->
+  <div class="brand-side">
+
+    <div class="logo">
+      <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="18" cy="18" r="17" stroke="rgba(255,255,255,0.28)" stroke-width="1.2"/>
+        <path d="M10 22 Q14 8 18 6 Q22 8 26 22" stroke="#F97316" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+        <path d="M7 22 Q18 27 29 22" stroke="rgba(255,255,255,0.55)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+        <circle cx="18" cy="18" r="2.8" fill="#F97316"/>
+        <line x1="18" y1="2" x2="18" y2="6" stroke="rgba(255,255,255,0.45)" stroke-width="1.4" stroke-linecap="round"/>
+        <line x1="18" y1="30" x2="18" y2="34" stroke="rgba(255,255,255,0.45)" stroke-width="1.4" stroke-linecap="round"/>
+        <line x1="2" y1="18" x2="6" y2="18" stroke="rgba(255,255,255,0.45)" stroke-width="1.4" stroke-linecap="round"/>
+        <line x1="30" y1="18" x2="34" y2="18" stroke="rgba(255,255,255,0.45)" stroke-width="1.4" stroke-linecap="round"/>
+      </svg>
+      <span class="logo-name">Traveloop</span>
+    </div>
+
+    <div class="dest-meta">
+      <div class="dest-pill"><span class="dot"></span><span id="dest-label">Now showing · Swiss Alps</span></div>
+      <h1 class="hero-headline" id="hero-hl">Mountains are<br><em>calling you.</em></h1>
+      <div class="slide-dots" id="sdots"></div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat"><div class="val">187</div><div class="lbl">Destinations</div></div>
+      <div class="stat"><div class="val">12k+</div><div class="lbl">Trips Planned</div></div>
+      <div class="stat"><div class="val">4.9★</div><div class="lbl">App Rating</div></div>
+    </div>
+
+  </div>
+
+  <!-- FORM -->
+  <div class="form-side">
+    <div class="glass-card">
+
+      <div class="tabs">
+        <button class="tab active" onclick="switchTab('login',this)">Sign In</button>
+        <button class="tab" onclick="switchTab('signup',this)">Sign Up</button>
+      </div>
+
+      <!-- LOGIN -->
+      <div id="login-form" class="auth-form active">
+        <div class="eyebrow">Welcome back</div>
+        <div class="card-title">Ready to explore?</div>
+        <div class="card-sub">Your itineraries, budgets &amp; destinations are waiting.</div>
+
+        <div class="field">
+          <label>Email</label>
+          <div class="inp-wrap">
+            <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 7 10-7"/></svg>
+            <input type="email" placeholder="you@example.com" autocomplete="email"/>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Password</label>
+          <div class="inp-wrap">
+            <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <input type="password" id="pw1" placeholder="••••••••" autocomplete="current-password"/>
+            <button class="eye-btn" type="button" onclick="togglePw('pw1',this)" aria-label="Show password">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+          <a href="#" class="forgot">Forgot password?</a>
+        </div>
+
+        <button class="btn-cta">
+          Continue Journey
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+
+        <div class="divider">or continue with</div>
+
+        <div class="social-grid">
+          <button class="btn-social">
+            <svg width="14" height="14" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+            Google
+          </button>
+          <button class="btn-social">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="#1877F2"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+            Facebook
+          </button>
+        </div>
+
+        <p class="switch-txt">New here? <a href="#" onclick="switchTabByName('signup');return false;">Create account →</a></p>
+      </div>
+
+      <!-- SIGNUP -->
+      <div id="signup-form" class="auth-form">
+        <div class="eyebrow">Join free today</div>
+        <div class="card-title">Start your journey.</div>
+        <div class="card-sub">Plan multi-city trips, track budgets &amp; share itineraries.</div>
+
+        <div class="field">
+          <label>Full Name</label>
+          <div class="inp-wrap">
+            <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+            <input type="text" placeholder="Your name" autocomplete="name"/>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Email</label>
+          <div class="inp-wrap">
+            <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 7 10-7"/></svg>
+            <input type="email" placeholder="you@example.com" autocomplete="email"/>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Password</label>
+          <div class="inp-wrap">
+            <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <input type="password" id="pw2" placeholder="Create a strong password" autocomplete="new-password"/>
+            <button class="eye-btn" type="button" onclick="togglePw('pw2',this)" aria-label="Show password">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <button class="btn-cta">
+          Begin Adventure
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+
+        <div class="divider">or sign up with</div>
+
+        <div class="social-grid">
+          <button class="btn-social">
+            <svg width="14" height="14" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+            Google
+          </button>
+          <button class="btn-social">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="#1877F2"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+            Facebook
+          </button>
+        </div>
+
+        <p class="switch-txt">Have an account? <a href="#" onclick="switchTabByName('login');return false;">Sign in →</a></p>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<!-- Location ticker -->
+<div class="loc-strip">
+  <span class="loc-dot"></span>
+  <span class="loc-text">Currently showing</span>
+  <span class="loc-name" id="loc-name">Swiss Alps, Switzerland</span>
+</div>
+
+<script>
+const DESTS = [
+  { pill:'Swiss Alps · Switzerland',  line1:'Mountains are',   em:'calling you.',        loc:'Swiss Alps, Switzerland' },
+  { pill:'Fushimi Inari · Japan',     line1:'Find your path',  em:'through ancient gates.', loc:'Fushimi Inari, Japan' },
+  { pill:'Santorini · Greece',        line1:'Endless blue,',   em:'infinite wonder.',    loc:'Santorini, Greece' },
+  { pill:'Open Road · Iceland',       line1:'Chase the horizon,', em:'wherever it leads.', loc:'Ring Road, Iceland' },
+  { pill:'Bali · Indonesia',          line1:'Lose yourself',   em:'to find yourself.',   loc:'Bali, Indonesia' },
+  { pill:'Paris · France',            line1:'Every street,',   em:'a new story.',        loc:'Paris, France' },
+];
+
+const slides = document.querySelectorAll('.slide');
+const dotsEl = document.getElementById('sdots');
+const destLabel = document.getElementById('dest-label');
+const heroHl = document.getElementById('hero-hl');
+const locName = document.getElementById('loc-name');
+let cur = 0, timer;
+
+DESTS.forEach((_, i) => {
+  const d = document.createElement('div');
+  d.className = 'sdot' + (i===0?' active':'');
+  d.onclick = () => goTo(i);
+  dotsEl.appendChild(d);
+});
+
+function getDots(){ return dotsEl.querySelectorAll('.sdot'); }
+
+function goTo(idx){
+  clearTimeout(timer);
+  slides[cur].classList.remove('active');
+  getDots()[cur].classList.remove('active');
+  cur = idx;
+  const s = slides[cur];
+  s.classList.add('active');
+  s.style.animation='none'; s.offsetHeight; s.style.animation='';
+  getDots()[cur].classList.add('active');
+
+  const d = DESTS[cur];
+  destLabel.textContent = 'Now showing · ' + d.pill;
+  locName.textContent = d.loc;
+
+  heroHl.style.opacity='0'; heroHl.style.transform='translateY(10px)';
+  heroHl.style.transition='none';
+  setTimeout(()=>{
+    heroHl.innerHTML = d.line1 + '<br><em>' + d.em + '</em>';
+    heroHl.style.transition='opacity 0.55s ease, transform 0.55s ease';
+    heroHl.style.opacity='1'; heroHl.style.transform='translateY(0)';
+  }, 280);
+
+  timer = setTimeout(()=>goTo((cur+1)%DESTS.length), 7000);
+}
+
+heroHl.style.transition='opacity 0.55s ease, transform 0.55s ease';
+timer = setTimeout(()=>goTo(1), 7000);
+
+function switchTab(name, btn){
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.auth-form').forEach(f=>f.classList.remove('active'));
+  document.getElementById(name+'-form').classList.add('active');
+}
+function switchTabByName(name){
+  const idx = name==='login'?0:1;
+  switchTab(name, document.querySelectorAll('.tab')[idx]);
+}
+
+function togglePw(id, btn){
+  const inp = document.getElementById(id);
+  const show = inp.type==='password';
+  inp.type = show ? 'text' : 'password';
+  btn.innerHTML = show
+    ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>'
+    : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
+}
+</script>
+</body>
+</html>
